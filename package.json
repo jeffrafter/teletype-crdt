@@ -2,8 +2,7 @@
   "name": "@atom/teletype-crdt",
   "version": "0.9.0",
   "description": "",
-  "main": "index.js",
-  "module": "index.js",
+  "main": "dist/main.js",
   "scripts": {
     "test": "node script/test",
     "compile-protobuf": "protoc --js_out=import_style=commonjs,binary:lib teletype-crdt.proto"
