@@ -1,9 +1,10 @@
 {
   "name": "@atom/teletype-crdt",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "",
-  "main": "index.js",
+  "main": "dist/main.js",
   "scripts": {
+    "build": "webpack",
     "test": "node script/test",
     "compile-protobuf": "protoc --js_out=import_style=commonjs,binary:lib teletype-crdt.proto"
   },
@@ -19,6 +20,7 @@
     "electron": "~>1.6.16",
     "mocha": "^3.4.1",
     "random-seed": "^0.3.0",
+    "webpack": "~3",
     "yargs": "^8.0.1"
   },
   "dependencies": {
