@@ -1,6 +1,6 @@
 {
   "name": "@atom/teletype-crdt",
-  "version": "0.9.0",
+  "version": "0.9.1",
   "description": "",
   "main": "dist/main.js",
   "scripts": {
