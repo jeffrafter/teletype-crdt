@@ -1,14 +1,4 @@
-(function webpackUniversalModuleDefinition(root, factory) {
-	if(typeof exports === 'object' && typeof module === 'object')
-		module.exports = factory();
-	else if(typeof define === 'function' && define.amd)
-		define([], factory);
-	else if(typeof exports === 'object')
-		exports["telepath-crdt"] = factory();
-	else
-		root["telepath-crdt"] = factory();
-})(typeof self !== 'undefined' ? self : this, function() {
-return /******/ (function(modules) { // webpackBootstrap
+define("telepath-crdt", [], function() { return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -104,55 +94,74 @@ module.exports = g;
 /* 1 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const assert = __webpack_require__(2)
+var assert = __webpack_require__(2);
 
-exports.ZERO_POINT = Object.freeze({row: 0, column: 0})
+exports.ZERO_POINT = Object.freeze({
+  row: 0,
+  column: 0
+});
 
 exports.compare = function (a, b) {
-  return primitiveCompare(a.row, a.column, b.row, b.column)
-}
+  return primitiveCompare(a.row, a.column, b.row, b.column);
+};
 
-function primitiveCompare (rowA, columnA, rowB, columnB) {
+function primitiveCompare(rowA, columnA, rowB, columnB) {
   if (rowA === rowB) {
-    return columnA - columnB
+    return columnA - columnB;
   } else {
-    return rowA - rowB
+    return rowA - rowB;
   }
 }
 
 exports.traverse = function (start, distance) {
-  if (distance.row === 0)
-    return {row: start.row, column: start.column + distance.column}
-  else {
-    return {row: start.row + distance.row, column: distance.column}
+  if (distance.row === 0) return {
+    row: start.row,
+    column: start.column + distance.column
+  };else {
+    return {
+      row: start.row + distance.row,
+      column: distance.column
+    };
   }
-}
+};
 
 exports.traversal = function (end, start) {
   if (end.row === start.row) {
-    return {row: 0, column: end.column - start.column}
+    return {
+      row: 0,
+      column: end.column - start.column
+    };
   } else {
-    return {row: end.row - start.row, column: end.column}
+    return {
+      row: end.row - start.row,
+      column: end.column
+    };
   }
-}
+};
 
 exports.extentForText = function (text) {
-  let row = 0
-  let column = 0
-  let index = 0
+  var row = 0;
+  var column = 0;
+  var index = 0;
+
   while (index < text.length) {
-    const char = text[index]
+    var char = text[index];
+
     if (char === '\n') {
-      column = 0
-      row++
+      column = 0;
+      row++;
     } else {
-      column++
+      column++;
     }
-    index++
+
+    index++;
   }
 
-  return {row, column}
-}
+  return {
+    row: row,
+    column: column
+  };
+};
 
 exports.characterIndexForPosition = function (text, target) {
   // Previously we instantiated a point object here and mutated its fields, so
@@ -160,25 +169,24 @@ exports.characterIndexForPosition = function (text, target) {
   // seems to trigger a weird optimization bug on v8 5.6.326.50 which causes
   // this function to return unpredictable results, so we use primitive-valued
   // variables instead.
-  let row = 0
-  let column = 0
-  let index = 0
+  var row = 0;
+  var column = 0;
+  var index = 0;
+
   while (primitiveCompare(row, column, target.row, target.column) < 0 && index <= text.length) {
     if (text[index] === '\n') {
-      row++
-      column = 0
+      row++;
+      column = 0;
     } else {
-      column++
+      column++;
     }
 
-    index++
+    index++;
   }
 
-  assert(primitiveCompare(row, column, target.row, target.column) <= 0, 'Target position should not exceed the extent of the given text')
-
-  return index
-}
-
+  assert(primitiveCompare(row, column, target.row, target.column) <= 0, 'Target position should not exceed the extent of the given text');
+  return index;
+};
 
 /***/ }),
 /* 2 */
@@ -682,1418 +690,1765 @@ var objectKeys = Object.keys || function (obj) {
 /* 3 */
 /***/ (function(module, exports) {
 
-module.exports =
-class SplayTree {
-  splayNode (node) {
-    if (!node) return
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-    while (true) {
-      if (this.isNodeLeftChild(this.getParent(node)) && this.isNodeRightChild(node)) { // zig-zag
-        this.rotateNodeLeft(node)
-        this.rotateNodeRight(node)
-      } else if (this.isNodeRightChild(this.getParent(node)) && this.isNodeLeftChild(node)) { // zig-zag
-        this.rotateNodeRight(node)
-        this.rotateNodeLeft(node)
-      } else if (this.isNodeLeftChild(this.getParent(node)) && this.isNodeLeftChild(node)) { // zig-zig
-        this.rotateNodeRight(this.getParent(node))
-        this.rotateNodeRight(node)
-      } else if (this.isNodeRightChild(this.getParent(node)) && this.isNodeRightChild(node)) { // zig-zig
-        this.rotateNodeLeft(this.getParent(node))
-        this.rotateNodeLeft(node)
-      } else { // zig
-        if (this.isNodeLeftChild(node)) {
-          this.rotateNodeRight(node)
-        } else if (this.isNodeRightChild(node)) {
-          this.rotateNodeLeft(node)
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+module.exports =
+/*#__PURE__*/
+function () {
+  function SplayTree() {
+    _classCallCheck(this, SplayTree);
+  }
+
+  _createClass(SplayTree, [{
+    key: "splayNode",
+    value: function splayNode(node) {
+      if (!node) return;
+
+      while (true) {
+        if (this.isNodeLeftChild(this.getParent(node)) && this.isNodeRightChild(node)) {
+          // zig-zag
+          this.rotateNodeLeft(node);
+          this.rotateNodeRight(node);
+        } else if (this.isNodeRightChild(this.getParent(node)) && this.isNodeLeftChild(node)) {
+          // zig-zag
+          this.rotateNodeRight(node);
+          this.rotateNodeLeft(node);
+        } else if (this.isNodeLeftChild(this.getParent(node)) && this.isNodeLeftChild(node)) {
+          // zig-zig
+          this.rotateNodeRight(this.getParent(node));
+          this.rotateNodeRight(node);
+        } else if (this.isNodeRightChild(this.getParent(node)) && this.isNodeRightChild(node)) {
+          // zig-zig
+          this.rotateNodeLeft(this.getParent(node));
+          this.rotateNodeLeft(node);
+        } else {
+          // zig
+          if (this.isNodeLeftChild(node)) {
+            this.rotateNodeRight(node);
+          } else if (this.isNodeRightChild(node)) {
+            this.rotateNodeLeft(node);
+          }
+
+          return;
+        }
+      }
+    }
+  }, {
+    key: "rotateNodeLeft",
+    value: function rotateNodeLeft(pivot) {
+      var root = this.getParent(pivot);
+
+      if (this.getParent(root)) {
+        if (root === this.getLeft(this.getParent(root))) {
+          this.setLeft(this.getParent(root), pivot);
+        } else {
+          this.setRight(this.getParent(root), pivot);
+        }
+      } else {
+        this.root = pivot;
+      }
+
+      this.setParent(pivot, this.getParent(root));
+      this.setRight(root, this.getLeft(pivot));
+      if (this.getRight(root)) this.setParent(this.getRight(root), root);
+      this.setLeft(pivot, root);
+      this.setParent(this.getLeft(pivot), pivot);
+      this.updateSubtreeExtent(root);
+      this.updateSubtreeExtent(pivot);
+    }
+  }, {
+    key: "rotateNodeRight",
+    value: function rotateNodeRight(pivot) {
+      var root = this.getParent(pivot);
+
+      if (this.getParent(root)) {
+        if (root === this.getLeft(this.getParent(root))) {
+          this.setLeft(this.getParent(root), pivot);
+        } else {
+          this.setRight(this.getParent(root), pivot);
+        }
+      } else {
+        this.root = pivot;
+      }
+
+      this.setParent(pivot, this.getParent(root));
+      this.setLeft(root, this.getRight(pivot));
+      if (this.getLeft(root)) this.setParent(this.getLeft(root), root);
+      this.setRight(pivot, root);
+      this.setParent(this.getRight(pivot), pivot);
+      this.updateSubtreeExtent(root);
+      this.updateSubtreeExtent(pivot);
+    }
+  }, {
+    key: "isNodeLeftChild",
+    value: function isNodeLeftChild(node) {
+      return node != null && this.getParent(node) != null && this.getLeft(this.getParent(node)) === node;
+    }
+  }, {
+    key: "isNodeRightChild",
+    value: function isNodeRightChild(node) {
+      return node != null && this.getParent(node) != null && this.getRight(this.getParent(node)) === node;
+    }
+  }, {
+    key: "getSuccessor",
+    value: function getSuccessor(node) {
+      if (this.getRight(node)) {
+        node = this.getRight(node);
+
+        while (this.getLeft(node)) {
+          node = this.getLeft(node);
+        }
+      } else {
+        while (this.getParent(node) && this.getRight(this.getParent(node)) === node) {
+          node = this.getParent(node);
         }
 
-        return
+        node = this.getParent(node);
       }
+
+      return node;
     }
-  }
+  }]);
 
-  rotateNodeLeft (pivot) {
-    const root = this.getParent(pivot)
-    if (this.getParent(root)) {
-      if (root === this.getLeft(this.getParent(root))) {
-        this.setLeft(this.getParent(root), pivot)
-      } else {
-        this.setRight(this.getParent(root), pivot)
-      }
-    } else {
-      this.root = pivot
-    }
-    this.setParent(pivot, this.getParent(root))
-
-    this.setRight(root, this.getLeft(pivot))
-    if (this.getRight(root)) this.setParent(this.getRight(root), root)
-
-    this.setLeft(pivot, root)
-    this.setParent(this.getLeft(pivot), pivot)
-
-    this.updateSubtreeExtent(root)
-    this.updateSubtreeExtent(pivot)
-  }
-
-  rotateNodeRight (pivot) {
-    const root = this.getParent(pivot)
-    if (this.getParent(root)) {
-      if (root === this.getLeft(this.getParent(root))) {
-        this.setLeft(this.getParent(root), pivot)
-      } else {
-        this.setRight(this.getParent(root), pivot)
-      }
-    } else {
-      this.root = pivot
-    }
-    this.setParent(pivot, this.getParent(root))
-
-    this.setLeft(root, this.getRight(pivot))
-    if (this.getLeft(root)) this.setParent(this.getLeft(root), root)
-
-    this.setRight(pivot, root)
-    this.setParent(this.getRight(pivot), pivot)
-
-    this.updateSubtreeExtent(root)
-    this.updateSubtreeExtent(pivot)
-  }
-
-  isNodeLeftChild (node) {
-    return node != null && this.getParent(node) != null && this.getLeft(this.getParent(node)) === node
-  }
-
-  isNodeRightChild (node) {
-    return node != null && this.getParent(node) != null && this.getRight(this.getParent(node)) === node
-  }
-
-  getSuccessor (node) {
-    if (this.getRight(node)) {
-      node = this.getRight(node)
-      while (this.getLeft(node)) {
-        node = this.getLeft(node)
-      }
-    } else {
-      while (this.getParent(node) && this.getRight(this.getParent(node)) === node) {
-        node = this.getParent(node)
-      }
-      node = this.getParent(node)
-    }
-    return node
-  }
-}
-
+  return SplayTree;
+}();
 
 /***/ }),
 /* 4 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const Document = __webpack_require__(5)
-const {
-  serializeOperation, deserializeOperation,
-  serializeRemotePosition, deserializeRemotePosition
-} = __webpack_require__(12)
+var Document = __webpack_require__(5);
+
+var _require = __webpack_require__(12),
+    serializeOperation = _require.serializeOperation,
+    deserializeOperation = _require.deserializeOperation,
+    serializeRemotePosition = _require.serializeRemotePosition,
+    deserializeRemotePosition = _require.deserializeRemotePosition;
 
 module.exports = {
-  Document,
-  serializeOperation, deserializeOperation,
-  serializeRemotePosition, deserializeRemotePosition
-}
-
+  Document: Document,
+  serializeOperation: serializeOperation,
+  deserializeOperation: deserializeOperation,
+  serializeRemotePosition: serializeRemotePosition,
+  deserializeRemotePosition: deserializeRemotePosition
+};
 
 /***/ }),
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const assert = __webpack_require__(2)
-const DocumentTree = __webpack_require__(10)
-const SplitTree = __webpack_require__(11)
-const {ZERO_POINT, compare, traverse, traversal, characterIndexForPosition, extentForText} = __webpack_require__(1)
+function _sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"] != null) _i["return"](); } finally { if (_d) throw _e; } } return _arr; }
+
+function _slicedToArray(arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return _sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }
+
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+var assert = __webpack_require__(2);
+
+var DocumentTree = __webpack_require__(10);
+
+var SplitTree = __webpack_require__(11);
+
+var _require = __webpack_require__(1),
+    ZERO_POINT = _require.ZERO_POINT,
+    compare = _require.compare,
+    traverse = _require.traverse,
+    traversal = _require.traversal,
+    characterIndexForPosition = _require.characterIndexForPosition,
+    extentForText = _require.extentForText;
 
 module.exports =
-class Document {
-  constructor ({siteId, text, history}) {
-    assert(siteId !== 0, 'siteId 0 is reserved')
-    this.siteId = siteId
-    this.nextSequenceNumber = 1
-    this.splitTreesBySpliceId = new Map()
-    this.deletionsBySpliceId = new Map()
-    this.undoCountsBySpliceId = new Map()
-    this.markerLayersBySiteId = new Map([[this.siteId, new Map()]])
-    this.deferredOperationsByDependencyId = new Map()
-    this.deferredResolutionsByDependencyId = new Map()
-    this.deferredMarkerUpdates = new Map()
-    this.deferredMarkerUpdatesByDependencyId = new Map()
-    this.maxSeqsBySite = {}
-    this.operations = []
-    this.undoStack = []
-    this.redoStack = []
-    this.nextCheckpointId = 1
+/*#__PURE__*/
+function () {
+  function Document(_ref) {
+    var siteId = _ref.siteId,
+        text = _ref.text,
+        history = _ref.history;
 
-    const firstSegment = {spliceId: {site: 0, seq: 0}, offset: ZERO_POINT, text: '', extent: ZERO_POINT, nextSplit: null, deletions: new Set()}
-    this.splitTreesBySpliceId.set(spliceIdToString(firstSegment.spliceId), new SplitTree(firstSegment))
+    _classCallCheck(this, Document);
 
-    const lastSegment = {spliceId: {site: 0, seq: 1}, offset: ZERO_POINT, text: '', extent: ZERO_POINT, nextSplit: null, deletions: new Set()}
-    this.splitTreesBySpliceId.set(spliceIdToString(lastSegment.spliceId), new SplitTree(lastSegment))
-
-    this.documentTree = new DocumentTree(
-      firstSegment,
-      lastSegment,
-      this.isSegmentVisible.bind(this)
-    )
+    assert(siteId !== 0, 'siteId 0 is reserved');
+    this.siteId = siteId;
+    this.nextSequenceNumber = 1;
+    this.splitTreesBySpliceId = new Map();
+    this.deletionsBySpliceId = new Map();
+    this.undoCountsBySpliceId = new Map();
+    this.markerLayersBySiteId = new Map([[this.siteId, new Map()]]);
+    this.deferredOperationsByDependencyId = new Map();
+    this.deferredResolutionsByDependencyId = new Map();
+    this.deferredMarkerUpdates = new Map();
+    this.deferredMarkerUpdatesByDependencyId = new Map();
+    this.maxSeqsBySite = {};
+    this.operations = [];
+    this.undoStack = [];
+    this.redoStack = [];
+    this.nextCheckpointId = 1;
+    var firstSegment = {
+      spliceId: {
+        site: 0,
+        seq: 0
+      },
+      offset: ZERO_POINT,
+      text: '',
+      extent: ZERO_POINT,
+      nextSplit: null,
+      deletions: new Set()
+    };
+    this.splitTreesBySpliceId.set(spliceIdToString(firstSegment.spliceId), new SplitTree(firstSegment));
+    var lastSegment = {
+      spliceId: {
+        site: 0,
+        seq: 1
+      },
+      offset: ZERO_POINT,
+      text: '',
+      extent: ZERO_POINT,
+      nextSplit: null,
+      deletions: new Set()
+    };
+    this.splitTreesBySpliceId.set(spliceIdToString(lastSegment.spliceId), new SplitTree(lastSegment));
+    this.documentTree = new DocumentTree(firstSegment, lastSegment, this.isSegmentVisible.bind(this));
 
     if (text) {
-      this.setTextInRange(ZERO_POINT, ZERO_POINT, text)
-      this.undoStack.length = 0
+      this.setTextInRange(ZERO_POINT, ZERO_POINT, text);
+      this.undoStack.length = 0;
     } else if (history) {
-      this.populateHistory(history)
+      this.populateHistory(history);
     }
   }
 
-  populateHistory ({baseText, nextCheckpointId, undoStack, redoStack}) {
-    this.setTextInRange(ZERO_POINT, ZERO_POINT, baseText)
-    this.nextCheckpointId = nextCheckpointId
+  _createClass(Document, [{
+    key: "populateHistory",
+    value: function populateHistory(_ref2) {
+      var baseText = _ref2.baseText,
+          nextCheckpointId = _ref2.nextCheckpointId,
+          undoStack = _ref2.undoStack,
+          redoStack = _ref2.redoStack;
+      this.setTextInRange(ZERO_POINT, ZERO_POINT, baseText);
+      this.nextCheckpointId = nextCheckpointId;
+      var newUndoStack = [];
+      var allEntries = undoStack.concat(redoStack.slice().reverse());
 
-    const newUndoStack = []
-    const allEntries = undoStack.concat(redoStack.slice().reverse())
-    for (let i = 0; i < allEntries.length; i++) {
-      const {type, changes, markersBefore, markersAfter, id, markers} = allEntries[i]
-      if (type === 'transaction') {
-        const operations = []
-        const markersSnapshotBefore = this.snapshotFromMarkers(markersBefore)
-        for (let j = changes.length - 1; j >= 0; j--) {
-          const {oldStart, oldEnd, newText} = changes[j]
-          operations.push(...this.setTextInRange(oldStart, oldEnd, newText))
+      for (var i = 0; i < allEntries.length; i++) {
+        var _allEntries$i = allEntries[i],
+            type = _allEntries$i.type,
+            changes = _allEntries$i.changes,
+            markersBefore = _allEntries$i.markersBefore,
+            markersAfter = _allEntries$i.markersAfter,
+            id = _allEntries$i.id,
+            markers = _allEntries$i.markers;
+
+        if (type === 'transaction') {
+          var operations = [];
+          var markersSnapshotBefore = this.snapshotFromMarkers(markersBefore);
+
+          for (var j = changes.length - 1; j >= 0; j--) {
+            var _changes$j = changes[j],
+                oldStart = _changes$j.oldStart,
+                oldEnd = _changes$j.oldEnd,
+                newText = _changes$j.newText;
+            operations.push.apply(operations, _toConsumableArray(this.setTextInRange(oldStart, oldEnd, newText)));
+          }
+
+          var markersSnapshotAfter = this.snapshotFromMarkers(markersAfter);
+          newUndoStack.push(new Transaction(0, operations, markersSnapshotBefore, markersSnapshotAfter));
+        } else if (type === 'checkpoint') {
+          newUndoStack.push(new Checkpoint(id, false, this.snapshotFromMarkers(markers)));
+        } else {
+          throw new Error("Unknown entry type '".concat(type, "'"));
         }
-        const markersSnapshotAfter = this.snapshotFromMarkers(markersAfter)
-        newUndoStack.push(new Transaction(0, operations, markersSnapshotBefore, markersSnapshotAfter))
-      } else if (type === 'checkpoint') {
-        newUndoStack.push(new Checkpoint(id, false, this.snapshotFromMarkers(markers)))
-      } else {
-        throw new Error(`Unknown entry type '${type}'`)
+      }
+
+      this.undoStack = newUndoStack;
+
+      for (var _i = 0; _i < redoStack.length; _i++) {
+        if (redoStack[_i].type === 'transaction') this.undo();
       }
     }
-
-    this.undoStack = newUndoStack
-    for (let i = 0; i < redoStack.length; i++) {
-      if (redoStack[i].type === 'transaction') this.undo()
+  }, {
+    key: "replicate",
+    value: function replicate(siteId) {
+      var replica = new Document({
+        siteId: siteId
+      });
+      replica.integrateOperations(this.getOperations());
+      return replica;
     }
-  }
+  }, {
+    key: "getOperations",
+    value: function getOperations() {
+      var markerOperations = [];
+      this.markerLayersBySiteId.forEach(function (layersById, siteId) {
+        var siteMarkerLayers = {};
+        layersById.forEach(function (markersById, layerId) {
+          var layer = {};
+          markersById.forEach(function (marker, markerId) {
+            layer[markerId] = marker;
+          });
+          siteMarkerLayers[layerId] = layer;
+        });
+        markerOperations.push({
+          type: 'markers-update',
+          updates: siteMarkerLayers,
+          siteId: siteId
+        });
+      });
+      return this.operations.concat(markerOperations);
+    }
+  }, {
+    key: "setTextInRange",
+    value: function setTextInRange(start, end, text, options) {
+      var spliceId = {
+        site: this.siteId,
+        seq: this.nextSequenceNumber
+      };
+      var operation = {
+        type: 'splice',
+        spliceId: spliceId
+      };
 
-  replicate (siteId) {
-    const replica = new Document({siteId})
-    replica.integrateOperations(this.getOperations())
-    return replica
-  }
+      if (compare(end, start) > 0) {
+        operation.deletion = this.delete(spliceId, start, end);
+      }
 
-  getOperations () {
-    const markerOperations = []
-    this.markerLayersBySiteId.forEach((layersById, siteId) => {
-      const siteMarkerLayers = {}
-      layersById.forEach((markersById, layerId) => {
-        const layer = {}
-        markersById.forEach((marker, markerId) => {
-          layer[markerId] = marker
-        })
-        siteMarkerLayers[layerId] = layer
-      })
+      if (text && text.length > 0) {
+        operation.insertion = this.insert(spliceId, start, text);
+      }
 
-      markerOperations.push({
+      this.updateMaxSeqsBySite(spliceId);
+      this.undoStack.push(new Transaction(this.getNow(), [operation]));
+      this.clearRedoStack();
+      this.operations.push(operation);
+      return [operation];
+    }
+  }, {
+    key: "getMarkers",
+    value: function getMarkers() {
+      var _this = this;
+
+      var result = {};
+      this.markerLayersBySiteId.forEach(function (layersById, siteId) {
+        if (layersById.size > 0) {
+          result[siteId] = {};
+          layersById.forEach(function (markersById, layerId) {
+            result[siteId][layerId] = {};
+            markersById.forEach(function (marker, markerId) {
+              var resultMarker = Object.assign({}, marker);
+              resultMarker.range = _this.resolveLogicalRange(marker.range, marker.exclusive);
+              result[siteId][layerId][markerId] = resultMarker;
+            });
+          });
+        }
+      });
+      return result;
+    }
+  }, {
+    key: "updateMarkers",
+    value: function updateMarkers(layerUpdatesById) {
+      var operation = {
         type: 'markers-update',
-        updates: siteMarkerLayers,
-        siteId
-      })
-    })
+        siteId: this.siteId,
+        updates: {}
+      };
+      var layers = this.markerLayersBySiteId.get(this.siteId);
 
-    return this.operations.concat(markerOperations)
-  }
+      for (var layerId in layerUpdatesById) {
+        var layerUpdate = layerUpdatesById[layerId];
+        layerId = parseInt(layerId);
+        var layer = layers.get(layerId);
 
-  setTextInRange (start, end, text, options) {
-    const spliceId = {site: this.siteId, seq: this.nextSequenceNumber}
-    const operation = {type: 'splice', spliceId}
+        if (layerUpdate === null) {
+          if (layer) {
+            layers.delete(layerId);
+            operation.updates[layerId] = null;
+          }
+        } else {
+          if (!layer) {
+            layer = new Map();
+            layers.set(layerId, layer);
+          }
 
-    if (compare(end, start) > 0) {
-      operation.deletion = this.delete(spliceId, start, end)
-    }
-    if (text && text.length > 0) {
-      operation.insertion = this.insert(spliceId, start, text)
-    }
-    this.updateMaxSeqsBySite(spliceId)
+          operation.updates[layerId] = {};
 
-    this.undoStack.push(new Transaction(this.getNow(), [operation]))
-    this.clearRedoStack()
+          for (var markerId in layerUpdate) {
+            var markerUpdate = layerUpdate[markerId];
+            markerId = parseInt(markerId);
+            var marker = layer.get(markerId);
 
-    this.operations.push(operation)
-    return [operation]
-  }
+            if (markerUpdate) {
+              if (marker) {
+                marker = Object.assign({}, marker);
+              } else {
+                marker = {
+                  exclusive: false,
+                  reversed: false,
+                  tailed: true
+                };
+              }
 
-  getMarkers () {
-    const result = {}
-    this.markerLayersBySiteId.forEach((layersById, siteId) => {
-      if (layersById.size > 0) {
-        result[siteId] = {}
-        layersById.forEach((markersById, layerId) => {
-          result[siteId][layerId] = {}
-          markersById.forEach((marker, markerId) => {
-            const resultMarker = Object.assign({}, marker)
-            resultMarker.range = this.resolveLogicalRange(marker.range, marker.exclusive)
+              var updatingExclusive = marker.exclusive !== markerUpdate.exclusive;
+              Object.assign(marker, markerUpdate);
 
-            result[siteId][layerId][markerId] = resultMarker
-          })
-        })
-      }
-    })
-    return result
-  }
+              if (markerUpdate.range || updatingExclusive) {
+                marker.range = this.getLogicalRange(markerUpdate.range || marker.range, marker.exclusive);
+              }
 
-  updateMarkers (layerUpdatesById) {
-    const operation = {
-      type: 'markers-update',
-      siteId: this.siteId,
-      updates: {}
-    }
-
-    const layers = this.markerLayersBySiteId.get(this.siteId)
-    for (let layerId in layerUpdatesById) {
-      const layerUpdate = layerUpdatesById[layerId]
-      layerId = parseInt(layerId)
-      let layer = layers.get(layerId)
-
-      if (layerUpdate === null) {
-        if (layer) {
-          layers.delete(layerId)
-          operation.updates[layerId] = null
-        }
-      } else {
-        if (!layer) {
-          layer = new Map()
-          layers.set(layerId, layer)
-        }
-
-        operation.updates[layerId] = {}
-        for (let markerId in layerUpdate) {
-          const markerUpdate = layerUpdate[markerId]
-          markerId = parseInt(markerId)
-          let marker = layer.get(markerId)
-
-          if (markerUpdate) {
-            if (marker) {
-              marker = Object.assign({}, marker)
+              Object.freeze(marker);
+              layer.set(markerId, marker);
+              operation.updates[layerId][markerId] = marker;
             } else {
-              marker = {exclusive: false, reversed: false, tailed: true}
+              layer.delete(markerId);
+              operation.updates[layerId][markerId] = null;
             }
-
-            const updatingExclusive = marker.exclusive !== markerUpdate.exclusive
-            Object.assign(marker, markerUpdate)
-            if (markerUpdate.range || updatingExclusive) {
-              marker.range = this.getLogicalRange(markerUpdate.range || marker.range, marker.exclusive)
-            }
-            Object.freeze(marker)
-            layer.set(markerId, marker)
-            operation.updates[layerId][markerId] = marker
-          } else {
-            layer.delete(markerId)
-            operation.updates[layerId][markerId] = null
           }
         }
       }
+
+      return [operation];
     }
+  }, {
+    key: "undo",
+    value: function undo() {
+      var spliceIndex = null;
+      var operationsToUndo = [];
+      var markersSnapshot;
 
-    return [operation]
-  }
+      for (var i = this.undoStack.length - 1; i >= 0; i--) {
+        var stackEntry = this.undoStack[i];
 
-  undo () {
-    let spliceIndex = null
-    let operationsToUndo = []
-    let markersSnapshot
-    for (let i = this.undoStack.length - 1; i >=0; i--) {
-      const stackEntry = this.undoStack[i]
-      if (stackEntry instanceof Transaction) {
-        operationsToUndo = stackEntry.operations
-        markersSnapshot = stackEntry.markersSnapshotBefore
-        spliceIndex = i
-        break
-      } else if (stackEntry instanceof Checkpoint && stackEntry.isBarrier) {
-        return null
-      }
-    }
-
-    if (spliceIndex != null) {
-      this.redoStack.push(...this.undoStack.splice(spliceIndex).reverse())
-      const {operations, textUpdates} = this.undoOrRedoOperations(operationsToUndo)
-      let markers = this.markersFromSnapshot(markersSnapshot)
-      return {operations, textUpdates, markers}
-    } else {
-      return null
-    }
-  }
-
-  redo () {
-    let spliceIndex = null
-    let operationsToRedo = []
-    let markersSnapshot
-    for (let i = this.redoStack.length - 1; i >= 0; i--) {
-      const stackEntry = this.redoStack[i]
-      if (stackEntry instanceof Transaction) {
-        operationsToRedo = stackEntry.operations
-        markersSnapshot = stackEntry.markersSnapshotAfter
-        spliceIndex = i
-        break
-      }
-    }
-
-    while (this.redoStack[spliceIndex - 1] instanceof Checkpoint) {
-      spliceIndex--
-    }
-
-    if (spliceIndex != null) {
-      this.undoStack.push(...this.redoStack.splice(spliceIndex).reverse())
-      const {operations, textUpdates} = this.undoOrRedoOperations(operationsToRedo)
-      const markers = markersSnapshot ? this.markersFromSnapshot(markersSnapshot) : null
-      return {operations, textUpdates, markers}
-    } else {
-      return null
-    }
-  }
-
-  clearUndoStack () {
-    this.undoStack.length = 0
-  }
-
-  clearRedoStack () {
-    this.redoStack.length = 0
-  }
-
-  applyGroupingInterval (groupingInterval) {
-    const topEntry = this.undoStack[this.undoStack.length - 1]
-    const previousEntry = this.undoStack[this.undoStack.length - 2]
-
-    if (topEntry instanceof Transaction) {
-      topEntry.groupingInterval = groupingInterval
-    } else {
-      return
-    }
-
-    if (previousEntry instanceof Transaction) {
-      const timeBetweenEntries = topEntry.timestamp - previousEntry.timestamp
-      const minGroupingInterval = Math.min(groupingInterval, previousEntry.groupingInterval || Infinity)
-      if (timeBetweenEntries < minGroupingInterval) {
-        this.undoStack.pop()
-        previousEntry.timestamp = topEntry.timestamp
-        previousEntry.groupingInterval = groupingInterval
-        previousEntry.operations.push(...topEntry.operations)
-        previousEntry.markersSnapshotAfter = topEntry.markersSnapshotAfter
-      }
-    }
-  }
-
-  getNow () {
-    return Date.now()
-  }
-
-  createCheckpoint (options) {
-    const checkpoint = new Checkpoint(
-      this.nextCheckpointId++,
-      options && options.isBarrier,
-      options && this.snapshotFromMarkers(options.markers)
-    )
-    this.undoStack.push(checkpoint)
-    return checkpoint.id
-  }
-
-  isBarrierPresentBeforeCheckpoint (checkpointId) {
-    for (let i = this.undoStack.length - 1; i >= 0; i--) {
-      const stackEntry = this.undoStack[i]
-      if (stackEntry instanceof Checkpoint) {
-        if (stackEntry.id == checkpointId) return false
-        if (stackEntry.isBarrier) return true
-      }
-    }
-
-    return false
-  }
-
-  groupChangesSinceCheckpoint (checkpointId, options) {
-    if (this.isBarrierPresentBeforeCheckpoint(checkpointId)) return false
-
-    const result = this.collectOperationsSinceCheckpoint(checkpointId, true, options && options.deleteCheckpoint)
-    if (result) {
-      const {operations, markersSnapshot}  = result
-      if (operations.length > 0) {
-        this.undoStack.push(new Transaction(
-          this.getNow(),
-          operations,
-          markersSnapshot,
-          options && this.snapshotFromMarkers(options.markers)
-        ))
-        return this.textUpdatesForOperations(operations)
-      } else {
-        return []
-      }
-    } else {
-      return false
-    }
-  }
-
-  revertToCheckpoint (checkpointId, options) {
-    if (this.isBarrierPresentBeforeCheckpoint(checkpointId)) return false
-
-    const collectResult = this.collectOperationsSinceCheckpoint(checkpointId, true, options && options.deleteCheckpoint)
-    if (collectResult) {
-      const {operations, textUpdates} = this.undoOrRedoOperations(collectResult.operations)
-      const markers = this.markersFromSnapshot(collectResult.markersSnapshot)
-      return {operations, textUpdates, markers}
-    } else {
-      return false
-    }
-  }
-
-  getChangesSinceCheckpoint (checkpointId) {
-    const result = this.collectOperationsSinceCheckpoint(checkpointId, false, false)
-    if (result) {
-      return this.textUpdatesForOperations(result.operations)
-    } else {
-      return false
-    }
-  }
-
-  collectOperationsSinceCheckpoint (checkpointId, deleteOperations, deleteCheckpoint) {
-    let checkpointIndex = -1
-    const operations = []
-    for (let i = this.undoStack.length - 1; i >= 0; i--) {
-      const stackEntry = this.undoStack[i]
-      if (stackEntry instanceof Checkpoint) {
-        if (stackEntry.id === checkpointId) {
-          checkpointIndex = i
-          break
+        if (stackEntry instanceof Transaction) {
+          operationsToUndo = stackEntry.operations;
+          markersSnapshot = stackEntry.markersSnapshotBefore;
+          spliceIndex = i;
+          break;
+        } else if (stackEntry instanceof Checkpoint && stackEntry.isBarrier) {
+          return null;
         }
-      } else if (stackEntry instanceof Transaction) {
-        operations.push(...stackEntry.operations)
+      }
+
+      if (spliceIndex != null) {
+        var _redoStack;
+
+        (_redoStack = this.redoStack).push.apply(_redoStack, _toConsumableArray(this.undoStack.splice(spliceIndex).reverse()));
+
+        var _undoOrRedoOperations = this.undoOrRedoOperations(operationsToUndo),
+            operations = _undoOrRedoOperations.operations,
+            textUpdates = _undoOrRedoOperations.textUpdates;
+
+        var markers = this.markersFromSnapshot(markersSnapshot);
+        return {
+          operations: operations,
+          textUpdates: textUpdates,
+          markers: markers
+        };
       } else {
-        throw new Error('Unknown stack entry ' + stackEntry.constructor.name)
+        return null;
       }
     }
+  }, {
+    key: "redo",
+    value: function redo() {
+      var spliceIndex = null;
+      var operationsToRedo = [];
+      var markersSnapshot;
 
-    if (checkpointIndex === -1) {
-      return null
-    } else {
-      const {markersSnapshot} = this.undoStack[checkpointIndex]
-      if (deleteOperations) {
-        if (!deleteCheckpoint) checkpointIndex++
-        this.undoStack.splice(checkpointIndex)
+      for (var i = this.redoStack.length - 1; i >= 0; i--) {
+        var stackEntry = this.redoStack[i];
+
+        if (stackEntry instanceof Transaction) {
+          operationsToRedo = stackEntry.operations;
+          markersSnapshot = stackEntry.markersSnapshotAfter;
+          spliceIndex = i;
+          break;
+        }
       }
-      return {operations, markersSnapshot}
-    }
-  }
 
-  groupLastChanges () {
-    let lastTransaction
+      while (this.redoStack[spliceIndex - 1] instanceof Checkpoint) {
+        spliceIndex--;
+      }
 
-    for (let i = this.undoStack.length - 1; i >= 0; i--) {
-      const stackEntry = this.undoStack[i]
+      if (spliceIndex != null) {
+        var _undoStack;
 
-      if (stackEntry instanceof Checkpoint) {
-        if (stackEntry.isBarrier) return false
+        (_undoStack = this.undoStack).push.apply(_undoStack, _toConsumableArray(this.redoStack.splice(spliceIndex).reverse()));
+
+        var _undoOrRedoOperations2 = this.undoOrRedoOperations(operationsToRedo),
+            operations = _undoOrRedoOperations2.operations,
+            textUpdates = _undoOrRedoOperations2.textUpdates;
+
+        var markers = markersSnapshot ? this.markersFromSnapshot(markersSnapshot) : null;
+        return {
+          operations: operations,
+          textUpdates: textUpdates,
+          markers: markers
+        };
       } else {
-        if (lastTransaction) {
-          this.undoStack.splice(i)
-          this.undoStack.push(new Transaction(
-            this.getNow(),
-            stackEntry.operations.concat(lastTransaction.operations),
-            stackEntry.markersSnapshotBefore,
-            lastTransaction.markersSnapshotAfter
-          ))
-          return true
+        return null;
+      }
+    }
+  }, {
+    key: "clearUndoStack",
+    value: function clearUndoStack() {
+      this.undoStack.length = 0;
+    }
+  }, {
+    key: "clearRedoStack",
+    value: function clearRedoStack() {
+      this.redoStack.length = 0;
+    }
+  }, {
+    key: "applyGroupingInterval",
+    value: function applyGroupingInterval(groupingInterval) {
+      var topEntry = this.undoStack[this.undoStack.length - 1];
+      var previousEntry = this.undoStack[this.undoStack.length - 2];
+
+      if (topEntry instanceof Transaction) {
+        topEntry.groupingInterval = groupingInterval;
+      } else {
+        return;
+      }
+
+      if (previousEntry instanceof Transaction) {
+        var timeBetweenEntries = topEntry.timestamp - previousEntry.timestamp;
+        var minGroupingInterval = Math.min(groupingInterval, previousEntry.groupingInterval || Infinity);
+
+        if (timeBetweenEntries < minGroupingInterval) {
+          var _previousEntry$operat;
+
+          this.undoStack.pop();
+          previousEntry.timestamp = topEntry.timestamp;
+          previousEntry.groupingInterval = groupingInterval;
+
+          (_previousEntry$operat = previousEntry.operations).push.apply(_previousEntry$operat, _toConsumableArray(topEntry.operations));
+
+          previousEntry.markersSnapshotAfter = topEntry.markersSnapshotAfter;
+        }
+      }
+    }
+  }, {
+    key: "getNow",
+    value: function getNow() {
+      return Date.now();
+    }
+  }, {
+    key: "createCheckpoint",
+    value: function createCheckpoint(options) {
+      var checkpoint = new Checkpoint(this.nextCheckpointId++, options && options.isBarrier, options && this.snapshotFromMarkers(options.markers));
+      this.undoStack.push(checkpoint);
+      return checkpoint.id;
+    }
+  }, {
+    key: "isBarrierPresentBeforeCheckpoint",
+    value: function isBarrierPresentBeforeCheckpoint(checkpointId) {
+      for (var i = this.undoStack.length - 1; i >= 0; i--) {
+        var stackEntry = this.undoStack[i];
+
+        if (stackEntry instanceof Checkpoint) {
+          if (stackEntry.id == checkpointId) return false;
+          if (stackEntry.isBarrier) return true;
+        }
+      }
+
+      return false;
+    }
+  }, {
+    key: "groupChangesSinceCheckpoint",
+    value: function groupChangesSinceCheckpoint(checkpointId, options) {
+      if (this.isBarrierPresentBeforeCheckpoint(checkpointId)) return false;
+      var result = this.collectOperationsSinceCheckpoint(checkpointId, true, options && options.deleteCheckpoint);
+
+      if (result) {
+        var operations = result.operations,
+            markersSnapshot = result.markersSnapshot;
+
+        if (operations.length > 0) {
+          this.undoStack.push(new Transaction(this.getNow(), operations, markersSnapshot, options && this.snapshotFromMarkers(options.markers)));
+          return this.textUpdatesForOperations(operations);
         } else {
-          lastTransaction = stackEntry
+          return [];
+        }
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "revertToCheckpoint",
+    value: function revertToCheckpoint(checkpointId, options) {
+      if (this.isBarrierPresentBeforeCheckpoint(checkpointId)) return false;
+      var collectResult = this.collectOperationsSinceCheckpoint(checkpointId, true, options && options.deleteCheckpoint);
+
+      if (collectResult) {
+        var _undoOrRedoOperations3 = this.undoOrRedoOperations(collectResult.operations),
+            operations = _undoOrRedoOperations3.operations,
+            textUpdates = _undoOrRedoOperations3.textUpdates;
+
+        var markers = this.markersFromSnapshot(collectResult.markersSnapshot);
+        return {
+          operations: operations,
+          textUpdates: textUpdates,
+          markers: markers
+        };
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "getChangesSinceCheckpoint",
+    value: function getChangesSinceCheckpoint(checkpointId) {
+      var result = this.collectOperationsSinceCheckpoint(checkpointId, false, false);
+
+      if (result) {
+        return this.textUpdatesForOperations(result.operations);
+      } else {
+        return false;
+      }
+    }
+  }, {
+    key: "collectOperationsSinceCheckpoint",
+    value: function collectOperationsSinceCheckpoint(checkpointId, deleteOperations, deleteCheckpoint) {
+      var checkpointIndex = -1;
+      var operations = [];
+
+      for (var i = this.undoStack.length - 1; i >= 0; i--) {
+        var stackEntry = this.undoStack[i];
+
+        if (stackEntry instanceof Checkpoint) {
+          if (stackEntry.id === checkpointId) {
+            checkpointIndex = i;
+            break;
+          }
+        } else if (stackEntry instanceof Transaction) {
+          operations.push.apply(operations, _toConsumableArray(stackEntry.operations));
+        } else {
+          throw new Error('Unknown stack entry ' + stackEntry.constructor.name);
+        }
+      }
+
+      if (checkpointIndex === -1) {
+        return null;
+      } else {
+        var markersSnapshot = this.undoStack[checkpointIndex].markersSnapshot;
+
+        if (deleteOperations) {
+          if (!deleteCheckpoint) checkpointIndex++;
+          this.undoStack.splice(checkpointIndex);
+        }
+
+        return {
+          operations: operations,
+          markersSnapshot: markersSnapshot
+        };
+      }
+    }
+  }, {
+    key: "groupLastChanges",
+    value: function groupLastChanges() {
+      var lastTransaction;
+
+      for (var i = this.undoStack.length - 1; i >= 0; i--) {
+        var stackEntry = this.undoStack[i];
+
+        if (stackEntry instanceof Checkpoint) {
+          if (stackEntry.isBarrier) return false;
+        } else {
+          if (lastTransaction) {
+            this.undoStack.splice(i);
+            this.undoStack.push(new Transaction(this.getNow(), stackEntry.operations.concat(lastTransaction.operations), stackEntry.markersSnapshotBefore, lastTransaction.markersSnapshotAfter));
+            return true;
+          } else {
+            lastTransaction = stackEntry;
+          }
+        }
+      }
+
+      return false;
+    }
+  }, {
+    key: "getHistory",
+    value: function getHistory(maxEntries) {
+      var originalUndoCounts = new Map(this.undoCountsBySpliceId);
+      var redoStack = [];
+
+      for (var i = this.redoStack.length - 1; i >= 0; i--) {
+        var entry = this.redoStack[i];
+
+        if (entry instanceof Transaction) {
+          var markersBefore = this.markersFromSnapshot(entry.markersSnapshotBefore);
+          var changes = this.undoOrRedoOperations(entry.operations).textUpdates;
+          var markersAfter = this.markersFromSnapshot(entry.markersSnapshotAfter);
+          redoStack.push({
+            type: 'transaction',
+            changes: changes,
+            markersBefore: markersBefore,
+            markersAfter: markersAfter
+          });
+        } else {
+          redoStack.push({
+            type: 'checkpoint',
+            id: entry.id,
+            markers: this.markersFromSnapshot(entry.markersSnapshot)
+          });
+        }
+
+        if (redoStack.length === maxEntries) break;
+      }
+
+      redoStack.reverse(); // Undo operations we redid above while computing changes
+
+      for (var _i2 = this.redoStack.length - 1; _i2 >= this.redoStack.length - redoStack.length; _i2--) {
+        var _entry = this.redoStack[_i2];
+
+        if (_entry instanceof Transaction) {
+          this.undoOrRedoOperations(_entry.operations);
+        }
+      }
+
+      var undoStack = [];
+
+      for (var _i3 = this.undoStack.length - 1; _i3 >= 0; _i3--) {
+        var _entry2 = this.undoStack[_i3];
+
+        if (_entry2 instanceof Transaction) {
+          var _markersAfter = this.markersFromSnapshot(_entry2.markersSnapshotAfter);
+
+          var _changes = invertTextUpdates(this.undoOrRedoOperations(_entry2.operations).textUpdates);
+
+          var _markersBefore = this.markersFromSnapshot(_entry2.markersSnapshotBefore);
+
+          undoStack.push({
+            type: 'transaction',
+            changes: _changes,
+            markersBefore: _markersBefore,
+            markersAfter: _markersAfter
+          });
+        } else {
+          undoStack.push({
+            type: 'checkpoint',
+            id: _entry2.id,
+            markers: this.markersFromSnapshot(_entry2.markersSnapshot)
+          });
+        }
+
+        if (undoStack.length === maxEntries) break;
+      }
+
+      undoStack.reverse(); // Redo operations we undid above while computing changes
+
+      for (var _i4 = this.undoStack.length - 1; _i4 >= this.undoStack.length - undoStack.length; _i4--) {
+        var _entry3 = this.undoStack[_i4];
+
+        if (_entry3 instanceof Transaction) {
+          this.undoOrRedoOperations(_entry3.operations);
+        }
+      }
+
+      this.undoCountsBySpliceId = originalUndoCounts;
+      return {
+        nextCheckpointId: this.nextCheckpointId,
+        undoStack: undoStack,
+        redoStack: redoStack
+      };
+    }
+  }, {
+    key: "delete",
+    value: function _delete(spliceId, start, end) {
+      var spliceIdString = spliceIdToString(spliceId);
+      var left = this.findLocalSegmentBoundary(start)[1];
+      var right = this.findLocalSegmentBoundary(end)[0];
+      var maxSeqsBySite = {};
+      var segment = left;
+
+      while (true) {
+        var maxSeq = maxSeqsBySite[segment.spliceId.site];
+
+        if (maxSeq == null || segment.spliceId.seq > maxSeq) {
+          maxSeqsBySite[segment.spliceId.site] = segment.spliceId.seq;
+        }
+
+        segment.deletions.add(spliceIdString);
+        this.documentTree.splayNode(segment);
+        this.documentTree.updateSubtreeExtent(segment);
+        if (segment === right) break;
+        segment = this.documentTree.getSuccessor(segment);
+      }
+
+      var deletion = {
+        spliceId: spliceId,
+        leftDependencyId: left.spliceId,
+        offsetInLeftDependency: left.offset,
+        rightDependencyId: right.spliceId,
+        offsetInRightDependency: traverse(right.offset, right.extent),
+        maxSeqsBySite: maxSeqsBySite
+      };
+      this.deletionsBySpliceId.set(spliceIdString, deletion);
+      return deletion;
+    }
+  }, {
+    key: "insert",
+    value: function insert(spliceId, position, text) {
+      var _findLocalSegmentBoun = this.findLocalSegmentBoundary(position),
+          _findLocalSegmentBoun2 = _slicedToArray(_findLocalSegmentBoun, 2),
+          left = _findLocalSegmentBoun2[0],
+          right = _findLocalSegmentBoun2[1];
+
+      var newSegment = {
+        spliceId: spliceId,
+        text: text,
+        extent: extentForText(text),
+        offset: ZERO_POINT,
+        leftDependency: left,
+        rightDependency: right,
+        nextSplit: null,
+        deletions: new Set()
+      };
+      this.documentTree.insertBetween(left, right, newSegment);
+      this.splitTreesBySpliceId.set(spliceIdToString(spliceId), new SplitTree(newSegment));
+      return {
+        text: text,
+        leftDependencyId: left.spliceId,
+        offsetInLeftDependency: traverse(left.offset, left.extent),
+        rightDependencyId: right.spliceId,
+        offsetInRightDependency: right.offset
+      };
+    }
+  }, {
+    key: "undoOrRedoOperations",
+    value: function undoOrRedoOperations(operationsToUndo) {
+      var undoOperations = [];
+      var oldUndoCounts = new Map();
+
+      for (var i = 0; i < operationsToUndo.length; i++) {
+        var spliceId = operationsToUndo[i].spliceId;
+        var newUndoCount = (this.undoCountsBySpliceId.get(spliceIdToString(spliceId)) || 0) + 1;
+        this.updateUndoCount(spliceId, newUndoCount, oldUndoCounts);
+        var operation = {
+          type: 'undo',
+          spliceId: spliceId,
+          undoCount: newUndoCount
+        };
+        undoOperations.push(operation);
+        this.operations.push(operation);
+      }
+
+      return {
+        operations: undoOperations,
+        textUpdates: this.textUpdatesForOperations(undoOperations, oldUndoCounts)
+      };
+    }
+  }, {
+    key: "isSpliceUndone",
+    value: function isSpliceUndone(_ref3) {
+      var spliceId = _ref3.spliceId;
+      var undoCount = this.undoCountsBySpliceId.get(spliceIdToString(spliceId));
+      return undoCount != null && undoCount & 1 === 1;
+    }
+  }, {
+    key: "canIntegrateOperation",
+    value: function canIntegrateOperation(op) {
+      switch (op.type) {
+        case 'splice':
+          {
+            var spliceId = op.spliceId,
+                deletion = op.deletion,
+                insertion = op.insertion;
+
+            if ((this.maxSeqsBySite[spliceId.site] || 0) !== spliceId.seq - 1) {
+              return false;
+            }
+
+            if (deletion) {
+              var hasLeftAndRightDependencies = this.splitTreesBySpliceId.has(spliceIdToString(deletion.leftDependencyId)) && this.splitTreesBySpliceId.has(spliceIdToString(deletion.rightDependencyId));
+              if (!hasLeftAndRightDependencies) return false;
+
+              for (var site in deletion.maxSeqsBySite) {
+                if (deletion.maxSeqsBySite[site] > (this.maxSeqsBySite[site] || 0)) {
+                  return false;
+                }
+              }
+            }
+
+            if (insertion) {
+              var _hasLeftAndRightDependencies = this.splitTreesBySpliceId.has(spliceIdToString(insertion.leftDependencyId)) && this.splitTreesBySpliceId.has(spliceIdToString(insertion.rightDependencyId));
+
+              if (!_hasLeftAndRightDependencies) return false;
+            }
+
+            return true;
+          }
+
+        case 'undo':
+          {
+            var spliceIdString = spliceIdToString(op.spliceId);
+            return this.splitTreesBySpliceId.has(spliceIdString) || this.deletionsBySpliceId.has(spliceIdString);
+          }
+
+        case 'markers-update':
+          return true;
+
+        default:
+          throw new Error('Unknown operation type');
+      }
+    }
+  }, {
+    key: "integrateOperations",
+    value: function integrateOperations(operations) {
+      var integratedOperations = [];
+      var oldUndoCounts;
+      var i = 0;
+
+      while (i < operations.length) {
+        var operation = operations[i++];
+        if (operation.type !== 'markers-update') this.operations.push(operation);
+
+        if (this.canIntegrateOperation(operation)) {
+          integratedOperations.push(operation);
+
+          switch (operation.type) {
+            case 'splice':
+              if (operation.deletion) this.integrateDeletion(operation.spliceId, operation.deletion);
+              if (operation.insertion) this.integrateInsertion(operation.spliceId, operation.insertion);
+              this.updateMaxSeqsBySite(operation.spliceId);
+              break;
+
+            case 'undo':
+              if (!oldUndoCounts) oldUndoCounts = new Map();
+              this.integrateUndo(operation, oldUndoCounts);
+              break;
+          }
+
+          this.collectDeferredOperations(operation, operations);
+        } else {
+          this.deferOperation(operation);
+        }
+      }
+
+      var textUpdates = this.textUpdatesForOperations(integratedOperations, oldUndoCounts);
+      var markerUpdates = this.updateMarkersForOperations(integratedOperations);
+      return {
+        textUpdates: textUpdates,
+        markerUpdates: markerUpdates
+      };
+    }
+  }, {
+    key: "collectDeferredOperations",
+    value: function collectDeferredOperations(_ref4, operations) {
+      var _this2 = this;
+
+      var spliceId = _ref4.spliceId;
+
+      if (spliceId) {
+        var spliceIdString = spliceIdToString(spliceId);
+        var dependentOps = this.deferredOperationsByDependencyId.get(spliceIdString);
+
+        if (dependentOps) {
+          dependentOps.forEach(function (dependentOp) {
+            if (_this2.canIntegrateOperation(dependentOp)) {
+              operations.push(dependentOp);
+            }
+          });
+          this.deferredOperationsByDependencyId.delete(spliceIdString);
         }
       }
     }
-
-    return false
-  }
-
-  getHistory (maxEntries) {
-    const originalUndoCounts = new Map(this.undoCountsBySpliceId)
-
-    const redoStack = []
-    for (let i = this.redoStack.length - 1; i >= 0; i--) {
-      const entry = this.redoStack[i]
-      if (entry instanceof Transaction) {
-        const markersBefore = this.markersFromSnapshot(entry.markersSnapshotBefore)
-        const changes = this.undoOrRedoOperations(entry.operations).textUpdates
-        const markersAfter = this.markersFromSnapshot(entry.markersSnapshotAfter)
-        redoStack.push({type: 'transaction', changes, markersBefore, markersAfter})
-      } else {
-        redoStack.push({
-          type: 'checkpoint',
-          id: entry.id,
-          markers: this.markersFromSnapshot(entry.markersSnapshot)
-        })
-      }
-      if (redoStack.length === maxEntries) break
-    }
-    redoStack.reverse()
-
-    // Undo operations we redid above while computing changes
-    for (let i = this.redoStack.length - 1; i >= this.redoStack.length - redoStack.length; i--) {
-      const entry = this.redoStack[i]
-      if (entry instanceof Transaction) {
-        this.undoOrRedoOperations(entry.operations)
-      }
-    }
-
-    const undoStack = []
-    for (let i = this.undoStack.length - 1; i >= 0; i--) {
-      const entry = this.undoStack[i]
-      if (entry instanceof Transaction) {
-        const markersAfter = this.markersFromSnapshot(entry.markersSnapshotAfter)
-        const changes = invertTextUpdates(this.undoOrRedoOperations(entry.operations).textUpdates)
-        const markersBefore = this.markersFromSnapshot(entry.markersSnapshotBefore)
-        undoStack.push({type: 'transaction', changes, markersBefore, markersAfter})
-      } else {
-        undoStack.push({
-          type: 'checkpoint',
-          id: entry.id,
-          markers: this.markersFromSnapshot(entry.markersSnapshot)
-        })
-      }
-      if (undoStack.length === maxEntries) break
-    }
-    undoStack.reverse()
-
-    // Redo operations we undid above while computing changes
-    for (let i = this.undoStack.length - 1; i >= this.undoStack.length - undoStack.length; i--) {
-      const entry = this.undoStack[i]
-      if (entry instanceof Transaction) {
-        this.undoOrRedoOperations(entry.operations)
-      }
-    }
-
-    this.undoCountsBySpliceId = originalUndoCounts
-
-    return {
-      nextCheckpointId: this.nextCheckpointId,
-      undoStack,
-      redoStack
-    }
-  }
-
-  delete (spliceId, start, end) {
-    const spliceIdString = spliceIdToString(spliceId)
-
-    const left = this.findLocalSegmentBoundary(start)[1]
-    const right = this.findLocalSegmentBoundary(end)[0]
-
-    const maxSeqsBySite = {}
-    let segment = left
-    while (true) {
-      const maxSeq = maxSeqsBySite[segment.spliceId.site]
-      if (maxSeq == null || segment.spliceId.seq > maxSeq) {
-        maxSeqsBySite[segment.spliceId.site] = segment.spliceId.seq
-      }
-
-      segment.deletions.add(spliceIdString)
-      this.documentTree.splayNode(segment)
-      this.documentTree.updateSubtreeExtent(segment)
-      if (segment === right) break
-      segment = this.documentTree.getSuccessor(segment)
-    }
-
-    const deletion = {
-      spliceId,
-      leftDependencyId: left.spliceId,
-      offsetInLeftDependency: left.offset,
-      rightDependencyId: right.spliceId,
-      offsetInRightDependency: traverse(right.offset, right.extent),
-      maxSeqsBySite
-    }
-    this.deletionsBySpliceId.set(spliceIdString, deletion)
-    return deletion
-  }
-
-  insert (spliceId, position, text) {
-    const [left, right] = this.findLocalSegmentBoundary(position)
-    const newSegment = {
-      spliceId,
-      text,
-      extent: extentForText(text),
-      offset: ZERO_POINT,
-      leftDependency: left,
-      rightDependency: right,
-      nextSplit: null,
-      deletions: new Set()
-    }
-    this.documentTree.insertBetween(left, right, newSegment)
-    this.splitTreesBySpliceId.set(spliceIdToString(spliceId), new SplitTree(newSegment))
-
-    return {
-      text,
-      leftDependencyId: left.spliceId,
-      offsetInLeftDependency: traverse(left.offset, left.extent),
-      rightDependencyId: right.spliceId,
-      offsetInRightDependency: right.offset
-    }
-  }
-
-  undoOrRedoOperations (operationsToUndo) {
-    const undoOperations = []
-    const oldUndoCounts = new Map()
-
-    for (var i = 0; i < operationsToUndo.length; i++) {
-      const {spliceId} = operationsToUndo[i]
-      const newUndoCount = (this.undoCountsBySpliceId.get(spliceIdToString(spliceId)) || 0) + 1
-      this.updateUndoCount(spliceId, newUndoCount, oldUndoCounts)
-      const operation = {type: 'undo', spliceId, undoCount: newUndoCount}
-      undoOperations.push(operation)
-      this.operations.push(operation)
-    }
-
-    return {
-      operations: undoOperations,
-      textUpdates: this.textUpdatesForOperations(undoOperations, oldUndoCounts)
-    }
-  }
-
-  isSpliceUndone ({spliceId}) {
-    const undoCount = this.undoCountsBySpliceId.get(spliceIdToString(spliceId))
-    return undoCount != null && (undoCount & 1 === 1)
-  }
-
-  canIntegrateOperation (op) {
-    switch (op.type) {
-      case 'splice': {
-        const {spliceId, deletion, insertion} = op
-
-        if ((this.maxSeqsBySite[spliceId.site] || 0) !== spliceId.seq - 1) {
-          return false
-        }
+  }, {
+    key: "deferOperation",
+    value: function deferOperation(op) {
+      if (op.type === 'splice') {
+        var spliceId = op.spliceId,
+            deletion = op.deletion,
+            insertion = op.insertion;
+        this.addOperationDependency(this.deferredOperationsByDependencyId, {
+          site: spliceId.site,
+          seq: spliceId.seq - 1
+        }, op);
 
         if (deletion) {
-          const hasLeftAndRightDependencies = (
-            this.splitTreesBySpliceId.has(spliceIdToString(deletion.leftDependencyId)) &&
-            this.splitTreesBySpliceId.has(spliceIdToString(deletion.rightDependencyId))
-          )
-          if (!hasLeftAndRightDependencies) return false
+          this.addOperationDependency(this.deferredOperationsByDependencyId, deletion.leftDependencyId, op);
+          this.addOperationDependency(this.deferredOperationsByDependencyId, deletion.rightDependencyId, op);
 
-          for (const site in deletion.maxSeqsBySite) {
-            if (deletion.maxSeqsBySite[site] > (this.maxSeqsBySite[site] || 0)) {
-              return false
-            }
+          for (var site in deletion.maxSeqsBySite) {
+            var seq = deletion.maxSeqsBySite[site];
+            this.addOperationDependency(this.deferredOperationsByDependencyId, {
+              site: site,
+              seq: seq
+            }, op);
           }
         }
 
         if (insertion) {
-          const hasLeftAndRightDependencies = (
-            this.splitTreesBySpliceId.has(spliceIdToString(insertion.leftDependencyId)) &&
-            this.splitTreesBySpliceId.has(spliceIdToString(insertion.rightDependencyId))
-          )
-          if (!hasLeftAndRightDependencies) return false
+          this.addOperationDependency(this.deferredOperationsByDependencyId, insertion.leftDependencyId, op);
+          this.addOperationDependency(this.deferredOperationsByDependencyId, insertion.rightDependencyId, op);
         }
-
-        return true
-      }
-      case 'undo': {
-        const spliceIdString = spliceIdToString(op.spliceId)
-        return (
-          this.splitTreesBySpliceId.has(spliceIdString) ||
-          this.deletionsBySpliceId.has(spliceIdString)
-        )
-      }
-      case 'markers-update':
-        return true
-      default:
-        throw new Error('Unknown operation type')
-    }
-  }
-
-  integrateOperations (operations) {
-    const integratedOperations = []
-    let oldUndoCounts
-    let i = 0
-    while (i < operations.length) {
-      const operation = operations[i++]
-      if (operation.type !== 'markers-update') this.operations.push(operation)
-
-      if (this.canIntegrateOperation(operation)) {
-        integratedOperations.push(operation)
-        switch (operation.type) {
-          case 'splice':
-            if (operation.deletion) this.integrateDeletion(operation.spliceId, operation.deletion)
-            if (operation.insertion) this.integrateInsertion(operation.spliceId, operation.insertion)
-            this.updateMaxSeqsBySite(operation.spliceId)
-            break
-          case 'undo':
-            if (!oldUndoCounts) oldUndoCounts = new Map()
-            this.integrateUndo(operation, oldUndoCounts)
-            break
-        }
-        this.collectDeferredOperations(operation, operations)
+      } else if (op.type === 'undo') {
+        this.addOperationDependency(this.deferredOperationsByDependencyId, op.spliceId, op);
       } else {
-        this.deferOperation(operation)
+        throw new Error('Unknown operation type: ' + op.type);
       }
     }
+  }, {
+    key: "addOperationDependency",
+    value: function addOperationDependency(map, dependencyId, op) {
+      var dependencyIdString = spliceIdToString(dependencyId);
 
-    const textUpdates = this.textUpdatesForOperations(integratedOperations, oldUndoCounts)
-    const markerUpdates = this.updateMarkersForOperations(integratedOperations)
+      if (!this.hasAppliedSplice(dependencyId)) {
+        var deferredOps = map.get(dependencyIdString);
 
-    return {textUpdates, markerUpdates}
-  }
-
-  collectDeferredOperations ({spliceId}, operations) {
-    if (spliceId) {
-      const spliceIdString = spliceIdToString(spliceId)
-      const dependentOps = this.deferredOperationsByDependencyId.get(spliceIdString)
-      if (dependentOps) {
-        dependentOps.forEach((dependentOp) => {
-          if (this.canIntegrateOperation(dependentOp)) {
-            operations.push(dependentOp)
-          }
-        })
-        this.deferredOperationsByDependencyId.delete(spliceIdString)
-      }
-    }
-  }
-
-  deferOperation (op) {
-    if (op.type === 'splice') {
-      const {spliceId, deletion, insertion} = op
-      this.addOperationDependency(this.deferredOperationsByDependencyId, {site: spliceId.site, seq: spliceId.seq - 1}, op)
-
-      if (deletion) {
-        this.addOperationDependency(this.deferredOperationsByDependencyId, deletion.leftDependencyId, op)
-        this.addOperationDependency(this.deferredOperationsByDependencyId, deletion.rightDependencyId, op)
-        for (const site in deletion.maxSeqsBySite) {
-          const seq = deletion.maxSeqsBySite[site]
-          this.addOperationDependency(this.deferredOperationsByDependencyId, {site, seq}, op)
-        }
-      }
-
-      if (insertion) {
-        this.addOperationDependency(this.deferredOperationsByDependencyId, insertion.leftDependencyId, op)
-        this.addOperationDependency(this.deferredOperationsByDependencyId, insertion.rightDependencyId, op)
-      }
-    } else if (op.type === 'undo') {
-      this.addOperationDependency(this.deferredOperationsByDependencyId, op.spliceId, op)
-    } else {
-      throw new Error('Unknown operation type: ' + op.type)
-    }
-  }
-
-  addOperationDependency (map, dependencyId, op) {
-    const dependencyIdString = spliceIdToString(dependencyId)
-    if (!this.hasAppliedSplice(dependencyId)) {
-      let deferredOps = map.get(dependencyIdString)
-      if (!deferredOps) {
-        deferredOps = new Set()
-        map.set(dependencyIdString, deferredOps)
-      }
-      deferredOps.add(op)
-    }
-  }
-
-  hasAppliedSplice (spliceId) {
-    const spliceIdString = spliceIdToString(spliceId)
-    return (
-      this.splitTreesBySpliceId.has(spliceIdString) ||
-      this.deletionsBySpliceId.has(spliceIdString)
-    )
-  }
-
-  integrateInsertion (spliceId, operation) {
-    const {text, leftDependencyId, offsetInLeftDependency, rightDependencyId, offsetInRightDependency} = operation
-
-    const originalRightDependency = this.findSegmentStart(rightDependencyId, offsetInRightDependency)
-    const originalLeftDependency = this.findSegmentEnd(leftDependencyId, offsetInLeftDependency)
-
-    this.documentTree.splayNode(originalLeftDependency)
-    this.documentTree.splayNode(originalRightDependency)
-
-    let currentSegment = this.documentTree.getSuccessor(originalLeftDependency)
-    let leftDependency = originalLeftDependency
-    let rightDependency = originalRightDependency
-    while (currentSegment !== rightDependency) {
-      const leftDependencyIndex = this.documentTree.getSegmentIndex(leftDependency)
-      const rightDependencyIndex = this.documentTree.getSegmentIndex(rightDependency)
-      const currentSegmentLeftDependencyIndex = this.documentTree.getSegmentIndex(currentSegment.leftDependency)
-      const currentSegmentRightDependencyIndex = this.documentTree.getSegmentIndex(currentSegment.rightDependency)
-
-      if (currentSegmentLeftDependencyIndex <= leftDependencyIndex && currentSegmentRightDependencyIndex >= rightDependencyIndex) {
-        if (spliceId.site < currentSegment.spliceId.site) {
-          rightDependency = currentSegment
-        } else {
-          leftDependency = currentSegment
+        if (!deferredOps) {
+          deferredOps = new Set();
+          map.set(dependencyIdString, deferredOps);
         }
 
-        currentSegment = this.documentTree.getSuccessor(leftDependency)
-      } else {
-        currentSegment = this.documentTree.getSuccessor(currentSegment)
+        deferredOps.add(op);
       }
     }
-
-    const newSegment = {
-      spliceId,
-      offset: ZERO_POINT,
-      text,
-      extent: extentForText(text),
-      leftDependency: originalLeftDependency,
-      rightDependency: originalRightDependency,
-      nextSplit: null,
-      deletions: new Set()
+  }, {
+    key: "hasAppliedSplice",
+    value: function hasAppliedSplice(spliceId) {
+      var spliceIdString = spliceIdToString(spliceId);
+      return this.splitTreesBySpliceId.has(spliceIdString) || this.deletionsBySpliceId.has(spliceIdString);
     }
-    this.documentTree.insertBetween(leftDependency, rightDependency, newSegment)
-    this.splitTreesBySpliceId.set(spliceIdToString(spliceId), new SplitTree(newSegment))
-  }
+  }, {
+    key: "integrateInsertion",
+    value: function integrateInsertion(spliceId, operation) {
+      var text = operation.text,
+          leftDependencyId = operation.leftDependencyId,
+          offsetInLeftDependency = operation.offsetInLeftDependency,
+          rightDependencyId = operation.rightDependencyId,
+          offsetInRightDependency = operation.offsetInRightDependency;
+      var originalRightDependency = this.findSegmentStart(rightDependencyId, offsetInRightDependency);
+      var originalLeftDependency = this.findSegmentEnd(leftDependencyId, offsetInLeftDependency);
+      this.documentTree.splayNode(originalLeftDependency);
+      this.documentTree.splayNode(originalRightDependency);
+      var currentSegment = this.documentTree.getSuccessor(originalLeftDependency);
+      var leftDependency = originalLeftDependency;
+      var rightDependency = originalRightDependency;
 
-  integrateDeletion (spliceId, deletion) {
-    const {
-      leftDependencyId, offsetInLeftDependency,
-      rightDependencyId, offsetInRightDependency,
-      maxSeqsBySite
-    } = deletion
+      while (currentSegment !== rightDependency) {
+        var leftDependencyIndex = this.documentTree.getSegmentIndex(leftDependency);
+        var rightDependencyIndex = this.documentTree.getSegmentIndex(rightDependency);
+        var currentSegmentLeftDependencyIndex = this.documentTree.getSegmentIndex(currentSegment.leftDependency);
+        var currentSegmentRightDependencyIndex = this.documentTree.getSegmentIndex(currentSegment.rightDependency);
 
-    const spliceIdString = spliceIdToString(spliceId)
-    this.deletionsBySpliceId.set(spliceIdString, deletion)
-
-    const left = this.findSegmentStart(leftDependencyId, offsetInLeftDependency)
-    const right = this.findSegmentEnd(rightDependencyId, offsetInRightDependency)
-    let segment = left
-    while (true) {
-      const maxSeq = maxSeqsBySite[segment.spliceId.site] || 0
-      if (segment.spliceId.seq <= maxSeq) {
-        this.documentTree.splayNode(segment)
-        segment.deletions.add(spliceIdString)
-        this.documentTree.updateSubtreeExtent(segment)
-      }
-
-      if (segment === right) break
-      segment = this.documentTree.getSuccessor(segment)
-    }
-  }
-
-  integrateUndo ({spliceId, undoCount}, oldUndoCounts) {
-    return this.updateUndoCount(spliceId, undoCount, oldUndoCounts)
-  }
-
-  getMarkerLayersForSiteId (siteId) {
-    let layers = this.markerLayersBySiteId.get(siteId)
-    if (!layers) {
-      layers = new Map()
-      this.markerLayersBySiteId.set(siteId, layers)
-    }
-    return layers
-  }
-
-  deferMarkerUpdate (siteId, layerId, markerId, markerUpdate) {
-    const {range} = markerUpdate
-    const deferredMarkerUpdate = {siteId, layerId, markerId}
-    this.addOperationDependency(this.deferredMarkerUpdatesByDependencyId, range.startDependencyId, deferredMarkerUpdate)
-    this.addOperationDependency(this.deferredMarkerUpdatesByDependencyId, range.endDependencyId, deferredMarkerUpdate)
-
-    let deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId)
-    if (!deferredUpdatesByLayerId) {
-      deferredUpdatesByLayerId = new Map()
-      this.deferredMarkerUpdates.set(siteId, deferredUpdatesByLayerId)
-    }
-    let deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId)
-    if (!deferredUpdatesByMarkerId) {
-      deferredUpdatesByMarkerId = new Map()
-      deferredUpdatesByLayerId.set(layerId, deferredUpdatesByMarkerId)
-    }
-    deferredUpdatesByMarkerId.set(markerId, markerUpdate)
-  }
-
-  updateMarkersForOperations (operations) {
-    const markerUpdates = {}
-
-    for (let i = 0; i < operations.length; i++) {
-      const operation = operations[i]
-      if (operation.type === 'markers-update') {
-        this.integrateMarkerUpdates(markerUpdates, operation)
-      } else if (operation.type === 'splice') {
-        this.integrateDeferredMarkerUpdates(markerUpdates, operation)
-      }
-    }
-
-    return markerUpdates
-  }
-
-  integrateMarkerUpdates (markerUpdates, {siteId, updates}) {
-    const layers = this.getMarkerLayersForSiteId(siteId)
-    if (!markerUpdates[siteId]) markerUpdates[siteId] = {}
-
-    for (let layerId in updates) {
-      const updatesByMarkerId = updates[layerId]
-      layerId = parseInt(layerId)
-
-      let layer = layers.get(layerId)
-      if (updatesByMarkerId) {
-        if (!layer) {
-          layer = new Map()
-          layers.set(layerId, layer)
-        }
-
-        if (!markerUpdates[siteId][layerId]) markerUpdates[siteId][layerId] = {}
-
-        for (let markerId in updatesByMarkerId) {
-          const markerUpdate = updatesByMarkerId[markerId]
-          markerId = parseInt(markerId)
-
-          if (markerUpdate) {
-            if (markerUpdate.range && !this.canResolveLogicalRange(markerUpdate.range)) {
-              this.deferMarkerUpdate(siteId, layerId, markerId, markerUpdate)
-            } else {
-              this.integrateMarkerUpdate(markerUpdates, siteId, layerId, markerId, markerUpdate)
-            }
+        if (currentSegmentLeftDependencyIndex <= leftDependencyIndex && currentSegmentRightDependencyIndex >= rightDependencyIndex) {
+          if (spliceId.site < currentSegment.spliceId.site) {
+            rightDependency = currentSegment;
           } else {
-            if (layer.has(markerId)) {
-              layer.delete(markerId)
-              markerUpdates[siteId][layerId][markerId] = null
-            }
+            leftDependency = currentSegment;
+          }
 
-            const deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId)
-            if (deferredUpdatesByLayerId) {
-              const deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId)
-              if (deferredUpdatesByMarkerId) {
-                deferredUpdatesByMarkerId.delete(markerId)
+          currentSegment = this.documentTree.getSuccessor(leftDependency);
+        } else {
+          currentSegment = this.documentTree.getSuccessor(currentSegment);
+        }
+      }
+
+      var newSegment = {
+        spliceId: spliceId,
+        offset: ZERO_POINT,
+        text: text,
+        extent: extentForText(text),
+        leftDependency: originalLeftDependency,
+        rightDependency: originalRightDependency,
+        nextSplit: null,
+        deletions: new Set()
+      };
+      this.documentTree.insertBetween(leftDependency, rightDependency, newSegment);
+      this.splitTreesBySpliceId.set(spliceIdToString(spliceId), new SplitTree(newSegment));
+    }
+  }, {
+    key: "integrateDeletion",
+    value: function integrateDeletion(spliceId, deletion) {
+      var leftDependencyId = deletion.leftDependencyId,
+          offsetInLeftDependency = deletion.offsetInLeftDependency,
+          rightDependencyId = deletion.rightDependencyId,
+          offsetInRightDependency = deletion.offsetInRightDependency,
+          maxSeqsBySite = deletion.maxSeqsBySite;
+      var spliceIdString = spliceIdToString(spliceId);
+      this.deletionsBySpliceId.set(spliceIdString, deletion);
+      var left = this.findSegmentStart(leftDependencyId, offsetInLeftDependency);
+      var right = this.findSegmentEnd(rightDependencyId, offsetInRightDependency);
+      var segment = left;
+
+      while (true) {
+        var maxSeq = maxSeqsBySite[segment.spliceId.site] || 0;
+
+        if (segment.spliceId.seq <= maxSeq) {
+          this.documentTree.splayNode(segment);
+          segment.deletions.add(spliceIdString);
+          this.documentTree.updateSubtreeExtent(segment);
+        }
+
+        if (segment === right) break;
+        segment = this.documentTree.getSuccessor(segment);
+      }
+    }
+  }, {
+    key: "integrateUndo",
+    value: function integrateUndo(_ref5, oldUndoCounts) {
+      var spliceId = _ref5.spliceId,
+          undoCount = _ref5.undoCount;
+      return this.updateUndoCount(spliceId, undoCount, oldUndoCounts);
+    }
+  }, {
+    key: "getMarkerLayersForSiteId",
+    value: function getMarkerLayersForSiteId(siteId) {
+      var layers = this.markerLayersBySiteId.get(siteId);
+
+      if (!layers) {
+        layers = new Map();
+        this.markerLayersBySiteId.set(siteId, layers);
+      }
+
+      return layers;
+    }
+  }, {
+    key: "deferMarkerUpdate",
+    value: function deferMarkerUpdate(siteId, layerId, markerId, markerUpdate) {
+      var range = markerUpdate.range;
+      var deferredMarkerUpdate = {
+        siteId: siteId,
+        layerId: layerId,
+        markerId: markerId
+      };
+      this.addOperationDependency(this.deferredMarkerUpdatesByDependencyId, range.startDependencyId, deferredMarkerUpdate);
+      this.addOperationDependency(this.deferredMarkerUpdatesByDependencyId, range.endDependencyId, deferredMarkerUpdate);
+      var deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId);
+
+      if (!deferredUpdatesByLayerId) {
+        deferredUpdatesByLayerId = new Map();
+        this.deferredMarkerUpdates.set(siteId, deferredUpdatesByLayerId);
+      }
+
+      var deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId);
+
+      if (!deferredUpdatesByMarkerId) {
+        deferredUpdatesByMarkerId = new Map();
+        deferredUpdatesByLayerId.set(layerId, deferredUpdatesByMarkerId);
+      }
+
+      deferredUpdatesByMarkerId.set(markerId, markerUpdate);
+    }
+  }, {
+    key: "updateMarkersForOperations",
+    value: function updateMarkersForOperations(operations) {
+      var markerUpdates = {};
+
+      for (var i = 0; i < operations.length; i++) {
+        var operation = operations[i];
+
+        if (operation.type === 'markers-update') {
+          this.integrateMarkerUpdates(markerUpdates, operation);
+        } else if (operation.type === 'splice') {
+          this.integrateDeferredMarkerUpdates(markerUpdates, operation);
+        }
+      }
+
+      return markerUpdates;
+    }
+  }, {
+    key: "integrateMarkerUpdates",
+    value: function integrateMarkerUpdates(markerUpdates, _ref6) {
+      var siteId = _ref6.siteId,
+          updates = _ref6.updates;
+      var layers = this.getMarkerLayersForSiteId(siteId);
+      if (!markerUpdates[siteId]) markerUpdates[siteId] = {};
+
+      for (var layerId in updates) {
+        var updatesByMarkerId = updates[layerId];
+        layerId = parseInt(layerId);
+        var layer = layers.get(layerId);
+
+        if (updatesByMarkerId) {
+          if (!layer) {
+            layer = new Map();
+            layers.set(layerId, layer);
+          }
+
+          if (!markerUpdates[siteId][layerId]) markerUpdates[siteId][layerId] = {};
+
+          for (var markerId in updatesByMarkerId) {
+            var markerUpdate = updatesByMarkerId[markerId];
+            markerId = parseInt(markerId);
+
+            if (markerUpdate) {
+              if (markerUpdate.range && !this.canResolveLogicalRange(markerUpdate.range)) {
+                this.deferMarkerUpdate(siteId, layerId, markerId, markerUpdate);
+              } else {
+                this.integrateMarkerUpdate(markerUpdates, siteId, layerId, markerId, markerUpdate);
+              }
+            } else {
+              if (layer.has(markerId)) {
+                layer.delete(markerId);
+                markerUpdates[siteId][layerId][markerId] = null;
+              }
+
+              var deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId);
+
+              if (deferredUpdatesByLayerId) {
+                var deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId);
+
+                if (deferredUpdatesByMarkerId) {
+                  deferredUpdatesByMarkerId.delete(markerId);
+                }
+              }
+            }
+          }
+        } else {
+          if (layer) {
+            markerUpdates[siteId][layerId] = null;
+            layers.delete(layerId);
+          }
+
+          var _deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId);
+
+          if (_deferredUpdatesByLayerId) {
+            _deferredUpdatesByLayerId.delete(layerId);
+          }
+        }
+      }
+    }
+  }, {
+    key: "integrateDeferredMarkerUpdates",
+    value: function integrateDeferredMarkerUpdates(markerUpdates, _ref7) {
+      var _this3 = this;
+
+      var spliceId = _ref7.spliceId;
+      var spliceIdString = spliceIdToString(spliceId);
+      var dependentMarkerUpdates = this.deferredMarkerUpdatesByDependencyId.get(spliceIdString);
+
+      if (dependentMarkerUpdates) {
+        dependentMarkerUpdates.forEach(function (_ref8) {
+          var siteId = _ref8.siteId,
+              layerId = _ref8.layerId,
+              markerId = _ref8.markerId;
+
+          var deferredUpdatesByLayerId = _this3.deferredMarkerUpdates.get(siteId);
+
+          if (deferredUpdatesByLayerId) {
+            var deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId);
+
+            if (deferredUpdatesByMarkerId) {
+              var deferredUpdate = deferredUpdatesByMarkerId.get(markerId);
+
+              if (deferredUpdate && _this3.canResolveLogicalRange(deferredUpdate.range)) {
+                _this3.integrateMarkerUpdate(markerUpdates, siteId, layerId, markerId, deferredUpdate);
+              }
+            }
+          }
+        });
+        this.deferredMarkerUpdatesByDependencyId.delete(spliceIdString);
+      }
+    }
+  }, {
+    key: "integrateMarkerUpdate",
+    value: function integrateMarkerUpdate(markerUpdates, siteId, layerId, markerId, update) {
+      var layer = this.markerLayersBySiteId.get(siteId).get(layerId);
+
+      if (!layer) {
+        layer = new Map();
+        this.markerLayersBySiteId.get(siteId).set(layerId, layer);
+      }
+
+      var marker = layer.get(markerId);
+      marker = marker ? Object.assign({}, marker) : {};
+      Object.assign(marker, update);
+      Object.freeze(marker);
+      layer.set(markerId, marker);
+      if (!markerUpdates[siteId]) markerUpdates[siteId] = {};
+      if (!markerUpdates[siteId][layerId]) markerUpdates[siteId][layerId] = {};
+      markerUpdates[siteId][layerId][markerId] = Object.assign({}, marker);
+      markerUpdates[siteId][layerId][markerId].range = this.resolveLogicalRange(marker.range, marker.exclusive);
+      var deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId);
+
+      if (deferredUpdatesByLayerId) {
+        var deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId);
+
+        if (deferredUpdatesByMarkerId) {
+          if (deferredUpdatesByMarkerId.has(markerId)) {
+            deferredUpdatesByMarkerId.delete(markerId);
+
+            if (deferredUpdatesByMarkerId.size === 0) {
+              deferredUpdatesByLayerId.delete(layerId);
+
+              if (deferredUpdatesByLayerId.size === 0) {
+                this.deferredMarkerUpdates.delete(siteId);
               }
             }
           }
         }
+      }
+    }
+  }, {
+    key: "snapshotFromMarkers",
+    value: function snapshotFromMarkers(layersById) {
+      if (!layersById) return layersById;
+      var snapshot = {};
+
+      for (var layerId in layersById) {
+        var layerSnapshot = {};
+        var markersById = layersById[layerId];
+
+        for (var markerId in markersById) {
+          var markerSnapshot = Object.assign({}, markersById[markerId]);
+          markerSnapshot.range = this.getLogicalRange(markerSnapshot.range, markerSnapshot.exclusive);
+          layerSnapshot[markerId] = markerSnapshot;
+        }
+
+        snapshot[layerId] = layerSnapshot;
+      }
+
+      return snapshot;
+    }
+  }, {
+    key: "markersFromSnapshot",
+    value: function markersFromSnapshot(snapshot) {
+      if (!snapshot) return snapshot;
+      var layersById = {};
+
+      for (var layerId in snapshot) {
+        var markersById = {};
+        var layerSnapshot = snapshot[layerId];
+
+        for (var markerId in layerSnapshot) {
+          var marker = Object.assign({}, layerSnapshot[markerId]);
+          marker.range = this.resolveLogicalRange(marker.range);
+          markersById[markerId] = marker;
+        }
+
+        layersById[layerId] = markersById;
+      }
+
+      return layersById;
+    }
+  }, {
+    key: "updateUndoCount",
+    value: function updateUndoCount(spliceId, newUndoCount, oldUndoCounts) {
+      var _this4 = this;
+
+      var spliceIdString = spliceIdToString(spliceId);
+      var previousUndoCount = this.undoCountsBySpliceId.get(spliceIdString) || 0;
+      if (newUndoCount <= previousUndoCount) return;
+      oldUndoCounts.set(spliceIdString, previousUndoCount);
+      this.undoCountsBySpliceId.set(spliceIdString, newUndoCount);
+      var segmentsToUpdate = new Set();
+      this.collectSegments(spliceIdString, segmentsToUpdate);
+      segmentsToUpdate.forEach(function (segment) {
+        var wasVisible = _this4.isSegmentVisible(segment, oldUndoCounts);
+
+        var isVisible = _this4.isSegmentVisible(segment);
+
+        if (isVisible !== wasVisible) {
+          _this4.documentTree.splayNode(segment, oldUndoCounts);
+
+          _this4.documentTree.updateSubtreeExtent(segment);
+        }
+      });
+    }
+  }, {
+    key: "textUpdatesForOperations",
+    value: function textUpdatesForOperations(operations, oldUndoCounts) {
+      var newSpliceIds = new Set();
+      var segmentStartPositions = new Map();
+      var segmentIndices = new Map();
+
+      for (var i = 0; i < operations.length; i++) {
+        var operation = operations[i];
+        var type = operation.type,
+            spliceId = operation.spliceId,
+            deletion = operation.deletion,
+            insertion = operation.insertion;
+
+        if (spliceId) {
+          var spliceIdString = spliceIdToString(spliceId);
+          if (type === 'splice') newSpliceIds.add(spliceIdString);
+          this.collectSegments(spliceIdString, null, segmentIndices, segmentStartPositions);
+        }
+      }
+
+      return this.computeChangesForSegments(segmentIndices, segmentStartPositions, oldUndoCounts, newSpliceIds);
+    }
+  }, {
+    key: "canResolveLogicalRange",
+    value: function canResolveLogicalRange(_ref9) {
+      var startDependencyId = _ref9.startDependencyId,
+          endDependencyId = _ref9.endDependencyId;
+      return this.hasAppliedSplice(startDependencyId) && this.hasAppliedSplice(endDependencyId);
+    }
+  }, {
+    key: "getLogicalRange",
+    value: function getLogicalRange(_ref10, exclusive) {
+      var start = _ref10.start,
+          end = _ref10.end;
+
+      var _findSegment = this.findSegment(start, exclusive),
+          startDependency = _findSegment.segment,
+          offsetInStartDependency = _findSegment.offset;
+
+      var _findSegment2 = this.findSegment(end, !exclusive || compare(start, end) === 0),
+          endDependency = _findSegment2.segment,
+          offsetInEndDependency = _findSegment2.offset;
+
+      return {
+        startDependencyId: startDependency.spliceId,
+        offsetInStartDependency: offsetInStartDependency,
+        endDependencyId: endDependency.spliceId,
+        offsetInEndDependency: offsetInEndDependency
+      };
+    }
+  }, {
+    key: "resolveLogicalRange",
+    value: function resolveLogicalRange(logicalRange, exclusive) {
+      var startDependencyId = logicalRange.startDependencyId,
+          offsetInStartDependency = logicalRange.offsetInStartDependency,
+          endDependencyId = logicalRange.endDependencyId,
+          offsetInEndDependency = logicalRange.offsetInEndDependency;
+      return {
+        start: this.resolveLogicalPosition(startDependencyId, offsetInStartDependency, exclusive),
+        end: this.resolveLogicalPosition(endDependencyId, offsetInEndDependency, !exclusive || isEmptyLogicalRange(logicalRange))
+      };
+    }
+  }, {
+    key: "resolveLogicalPosition",
+    value: function resolveLogicalPosition(spliceId, offset, preferStart) {
+      var splitTree = this.splitTreesBySpliceId.get(spliceIdToString(spliceId));
+      var segment = splitTree.findSegmentContainingOffset(offset);
+      var nextSegmentOffset = traverse(segment.offset, segment.extent);
+
+      if (preferStart && compare(offset, nextSegmentOffset) === 0) {
+        segment = splitTree.getSuccessor(segment) || segment;
+      }
+
+      var segmentStart = this.documentTree.getSegmentPosition(segment);
+
+      if (this.isSegmentVisible(segment)) {
+        return traverse(segmentStart, traversal(offset, segment.offset));
       } else {
-        if (layer) {
-          markerUpdates[siteId][layerId] = null
-          layers.delete(layerId)
-        }
-
-        const deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId)
-        if (deferredUpdatesByLayerId) {
-          deferredUpdatesByLayerId.delete(layerId)
-        }
+        return segmentStart;
       }
     }
-  }
+  }, {
+    key: "findLocalSegmentBoundary",
+    value: function findLocalSegmentBoundary(position) {
+      var _documentTree$findSeg = this.documentTree.findSegmentContainingPosition(position),
+          segment = _documentTree$findSeg.segment,
+          start = _documentTree$findSeg.start,
+          end = _documentTree$findSeg.end;
 
-  integrateDeferredMarkerUpdates (markerUpdates, {spliceId}) {
-    const spliceIdString = spliceIdToString(spliceId)
-    const dependentMarkerUpdates = this.deferredMarkerUpdatesByDependencyId.get(spliceIdString)
-    if (dependentMarkerUpdates) {
-      dependentMarkerUpdates.forEach(({siteId, layerId, markerId}) => {
-        const deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId)
-        if (deferredUpdatesByLayerId) {
-          const deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId)
-          if (deferredUpdatesByMarkerId) {
-            const deferredUpdate = deferredUpdatesByMarkerId.get(markerId)
-            if (deferredUpdate && this.canResolveLogicalRange(deferredUpdate.range)) {
-              this.integrateMarkerUpdate(markerUpdates, siteId, layerId, markerId, deferredUpdate)
-            }
-          }
-        }
-      })
-      this.deferredMarkerUpdatesByDependencyId.delete(spliceIdString)
-    }
-  }
-
-  integrateMarkerUpdate (markerUpdates, siteId, layerId, markerId, update) {
-    let layer = this.markerLayersBySiteId.get(siteId).get(layerId)
-    if (!layer) {
-      layer = new Map()
-      this.markerLayersBySiteId.get(siteId).set(layerId, layer)
-    }
-
-    let marker = layer.get(markerId)
-    marker = marker ? Object.assign({}, marker) : {}
-    Object.assign(marker, update)
-    Object.freeze(marker)
-    layer.set(markerId, marker)
-
-    if (!markerUpdates[siteId]) markerUpdates[siteId] = {}
-    if (!markerUpdates[siteId][layerId]) markerUpdates[siteId][layerId] = {}
-    markerUpdates[siteId][layerId][markerId] = Object.assign({}, marker)
-    markerUpdates[siteId][layerId][markerId].range = this.resolveLogicalRange(marker.range, marker.exclusive)
-
-    const deferredUpdatesByLayerId = this.deferredMarkerUpdates.get(siteId)
-    if (deferredUpdatesByLayerId) {
-      const deferredUpdatesByMarkerId = deferredUpdatesByLayerId.get(layerId)
-      if (deferredUpdatesByMarkerId) {
-        if (deferredUpdatesByMarkerId.has(markerId)) {
-          deferredUpdatesByMarkerId.delete(markerId)
-          if (deferredUpdatesByMarkerId.size === 0) {
-            deferredUpdatesByLayerId.delete(layerId)
-            if (deferredUpdatesByLayerId.size === 0) {
-              this.deferredMarkerUpdates.delete(siteId)
-            }
-          }
-        }
+      if (compare(position, end) < 0) {
+        var splitTree = this.splitTreesBySpliceId.get(spliceIdToString(segment.spliceId));
+        return this.splitSegment(splitTree, segment, traversal(position, start));
+      } else {
+        return [segment, this.documentTree.getSuccessor(segment)];
       }
     }
-  }
-
-  snapshotFromMarkers (layersById) {
-    if (!layersById) return layersById
-
-    const snapshot = {}
-    for (const layerId in layersById) {
-      const layerSnapshot = {}
-      const markersById = layersById[layerId]
-      for (const markerId in markersById) {
-        const markerSnapshot = Object.assign({}, markersById[markerId])
-        markerSnapshot.range = this.getLogicalRange(markerSnapshot.range, markerSnapshot.exclusive)
-        layerSnapshot[markerId] = markerSnapshot
-      }
-      snapshot[layerId] = layerSnapshot
+  }, {
+    key: "splitSegment",
+    value: function splitSegment(splitTree, segment, offset) {
+      var suffix = splitTree.splitSegment(segment, offset);
+      this.documentTree.splitSegment(segment, suffix);
+      return [segment, suffix];
     }
-    return snapshot
-  }
+  }, {
+    key: "findSegment",
+    value: function findSegment(position, preferStart) {
+      var _documentTree$findSeg2 = this.documentTree.findSegmentContainingPosition(position),
+          segment = _documentTree$findSeg2.segment,
+          start = _documentTree$findSeg2.start,
+          end = _documentTree$findSeg2.end;
 
-  markersFromSnapshot (snapshot) {
-    if (!snapshot) return snapshot
+      var offset = traverse(segment.offset, traversal(position, start));
 
-    const layersById = {}
-    for (const layerId in snapshot) {
-      const markersById = {}
-      const layerSnapshot = snapshot[layerId]
-      for (const markerId in layerSnapshot) {
-        const marker = Object.assign({}, layerSnapshot[markerId])
-        marker.range = this.resolveLogicalRange(marker.range)
-        markersById[markerId] = marker
+      if (preferStart && compare(position, end) === 0) {
+        segment = this.documentTree.getSuccessor(segment);
+        offset = segment.offset;
       }
-      layersById[layerId] = markersById
+
+      return {
+        segment: segment,
+        offset: offset
+      };
     }
-    return layersById
-  }
+  }, {
+    key: "findSegmentStart",
+    value: function findSegmentStart(spliceId, offset) {
+      var splitTree = this.splitTreesBySpliceId.get(spliceIdToString(spliceId));
+      var segment = splitTree.findSegmentContainingOffset(offset);
+      var segmentEndOffset = traverse(segment.offset, segment.extent);
 
-  updateUndoCount (spliceId, newUndoCount, oldUndoCounts) {
-    const spliceIdString = spliceIdToString(spliceId)
-    const previousUndoCount = this.undoCountsBySpliceId.get(spliceIdString) || 0
-    if (newUndoCount <= previousUndoCount) return
+      if (compare(segment.offset, offset) === 0) {
+        return segment;
+      } else if (compare(segmentEndOffset, offset) === 0) {
+        return segment.nextSplit;
+      } else {
+        var _splitSegment = this.splitSegment(splitTree, segment, traversal(offset, segment.offset)),
+            _splitSegment2 = _slicedToArray(_splitSegment, 2),
+            prefix = _splitSegment2[0],
+            suffix = _splitSegment2[1];
 
-    oldUndoCounts.set(spliceIdString, previousUndoCount)
-    this.undoCountsBySpliceId.set(spliceIdString, newUndoCount)
-
-    const segmentsToUpdate = new Set()
-    this.collectSegments(spliceIdString, segmentsToUpdate)
-
-    segmentsToUpdate.forEach((segment) => {
-      const wasVisible = this.isSegmentVisible(segment, oldUndoCounts)
-      const isVisible = this.isSegmentVisible(segment)
-      if (isVisible !== wasVisible) {
-        this.documentTree.splayNode(segment, oldUndoCounts)
-        this.documentTree.updateSubtreeExtent(segment)
-      }
-    })
-  }
-
-  textUpdatesForOperations (operations, oldUndoCounts) {
-    const newSpliceIds = new Set()
-    const segmentStartPositions = new Map()
-    const segmentIndices = new Map()
-
-    for (let i = 0; i < operations.length; i++) {
-      const operation = operations[i]
-      const {type, spliceId, deletion, insertion} = operation
-      if (spliceId) {
-        const spliceIdString = spliceIdToString(spliceId)
-        if (type === 'splice') newSpliceIds.add(spliceIdString)
-        this.collectSegments(spliceIdString, null, segmentIndices, segmentStartPositions)
+        return suffix;
       }
     }
+  }, {
+    key: "findSegmentEnd",
+    value: function findSegmentEnd(spliceId, offset) {
+      var splitTree = this.splitTreesBySpliceId.get(spliceIdToString(spliceId));
+      var segment = splitTree.findSegmentContainingOffset(offset);
+      var segmentEndOffset = traverse(segment.offset, segment.extent);
 
-    return this.computeChangesForSegments(segmentIndices, segmentStartPositions, oldUndoCounts, newSpliceIds)
-  }
+      if (compare(segmentEndOffset, offset) === 0) {
+        return segment;
+      } else {
+        var _splitSegment3 = this.splitSegment(splitTree, segment, traversal(offset, segment.offset)),
+            _splitSegment4 = _slicedToArray(_splitSegment3, 2),
+            prefix = _splitSegment4[0],
+            suffix = _splitSegment4[1];
 
-  canResolveLogicalRange ({startDependencyId, endDependencyId}) {
-    return (
-      this.hasAppliedSplice(startDependencyId) &&
-      this.hasAppliedSplice(endDependencyId)
-    )
-  }
-
-  getLogicalRange ({start, end}, exclusive) {
-    const {segment: startDependency, offset: offsetInStartDependency} = this.findSegment(start, exclusive)
-    const {segment: endDependency, offset: offsetInEndDependency} = this.findSegment(end, !exclusive || compare(start, end) === 0)
-
-    return {
-      startDependencyId: startDependency.spliceId,
-      offsetInStartDependency,
-      endDependencyId: endDependency.spliceId,
-      offsetInEndDependency
-    }
-  }
-
-  resolveLogicalRange (logicalRange, exclusive) {
-    const {
-      startDependencyId, offsetInStartDependency,
-      endDependencyId, offsetInEndDependency
-    } = logicalRange
-    return {
-      start: this.resolveLogicalPosition(startDependencyId, offsetInStartDependency, exclusive),
-      end: this.resolveLogicalPosition(endDependencyId, offsetInEndDependency, !exclusive || isEmptyLogicalRange(logicalRange))
-    }
-  }
-
-  resolveLogicalPosition (spliceId, offset, preferStart) {
-    const splitTree = this.splitTreesBySpliceId.get(spliceIdToString(spliceId))
-    let segment = splitTree.findSegmentContainingOffset(offset)
-    const nextSegmentOffset = traverse(segment.offset, segment.extent)
-    if (preferStart && compare(offset, nextSegmentOffset) === 0) {
-      segment = splitTree.getSuccessor(segment) || segment
-    }
-    const segmentStart = this.documentTree.getSegmentPosition(segment)
-
-    if (this.isSegmentVisible(segment)) {
-      return traverse(segmentStart, traversal(offset, segment.offset))
-    } else {
-      return segmentStart
-    }
-  }
-
-  findLocalSegmentBoundary (position) {
-    const {segment, start, end} = this.documentTree.findSegmentContainingPosition(position)
-    if (compare(position, end) < 0) {
-      const splitTree = this.splitTreesBySpliceId.get(spliceIdToString(segment.spliceId))
-      return this.splitSegment(splitTree, segment, traversal(position, start))
-    } else {
-      return [segment, this.documentTree.getSuccessor(segment)]
-    }
-  }
-
-  splitSegment (splitTree, segment, offset) {
-    const suffix = splitTree.splitSegment(segment, offset)
-    this.documentTree.splitSegment(segment, suffix)
-    return [segment, suffix]
-  }
-
-  findSegment (position, preferStart) {
-    let {segment, start, end} = this.documentTree.findSegmentContainingPosition(position)
-    let offset = traverse(segment.offset, traversal(position, start))
-    if (preferStart && compare(position, end) === 0) {
-      segment = this.documentTree.getSuccessor(segment)
-      offset = segment.offset
-    }
-    return {segment, offset}
-  }
-
-  findSegmentStart (spliceId, offset) {
-    const splitTree = this.splitTreesBySpliceId.get(spliceIdToString(spliceId))
-    const segment = splitTree.findSegmentContainingOffset(offset)
-    const segmentEndOffset = traverse(segment.offset, segment.extent)
-    if (compare(segment.offset, offset) === 0) {
-      return segment
-    } else if (compare(segmentEndOffset, offset) === 0) {
-      return segment.nextSplit
-    } else {
-      const [prefix, suffix] = this.splitSegment(splitTree, segment, traversal(offset, segment.offset))
-      return suffix
-    }
-  }
-
-  findSegmentEnd (spliceId, offset) {
-    const splitTree = this.splitTreesBySpliceId.get(spliceIdToString(spliceId))
-    const segment = splitTree.findSegmentContainingOffset(offset)
-    const segmentEndOffset = traverse(segment.offset, segment.extent)
-    if (compare(segmentEndOffset, offset) === 0) {
-      return segment
-    } else {
-      const [prefix, suffix] = this.splitSegment(splitTree, segment, traversal(offset, segment.offset))
-      return prefix
-    }
-  }
-
-  getText () {
-    let text = ''
-    const segments = this.documentTree.getSegments()
-    for (var i = 0; i < segments.length; i++) {
-      const segment = segments[i]
-      if (this.isSegmentVisible(segment)) text += segment.text
-    }
-    return text
-  }
-
-  collectSegments (spliceIdString, segments, segmentIndices, segmentStartPositions) {
-    const insertionSplitTree = this.splitTreesBySpliceId.get(spliceIdString)
-    if (insertionSplitTree) {
-      let segment = insertionSplitTree.getStart()
-      while (segment) {
-        if (segments) {
-          segments.add(segment)
-        } else {
-          segmentStartPositions.set(segment, this.documentTree.getSegmentPosition(segment))
-          segmentIndices.set(segment, this.documentTree.getSegmentIndex(segment))
-        }
-        segment = insertionSplitTree.getSuccessor(segment)
+        return prefix;
       }
     }
+  }, {
+    key: "getText",
+    value: function getText() {
+      var text = '';
+      var segments = this.documentTree.getSegments();
 
-    const deletion = this.deletionsBySpliceId.get(spliceIdString)
-    if (deletion) {
-      const {
-        leftDependencyId, offsetInLeftDependency,
-        rightDependencyId, offsetInRightDependency,
-        maxSeqsBySite
-      } = deletion
+      for (var i = 0; i < segments.length; i++) {
+        var segment = segments[i];
+        if (this.isSegmentVisible(segment)) text += segment.text;
+      }
 
-      const left = this.findSegmentStart(leftDependencyId, offsetInLeftDependency)
-      const right = this.findSegmentEnd(rightDependencyId, offsetInRightDependency)
-      let segment = left
-      while (true) {
-        const maxSeq = maxSeqsBySite[segment.spliceId.site] || 0
-        if (segment.spliceId.seq <= maxSeq) {
+      return text;
+    }
+  }, {
+    key: "collectSegments",
+    value: function collectSegments(spliceIdString, segments, segmentIndices, segmentStartPositions) {
+      var insertionSplitTree = this.splitTreesBySpliceId.get(spliceIdString);
+
+      if (insertionSplitTree) {
+        var segment = insertionSplitTree.getStart();
+
+        while (segment) {
           if (segments) {
-            segments.add(segment)
+            segments.add(segment);
           } else {
-            segmentStartPositions.set(segment, this.documentTree.getSegmentPosition(segment))
-            segmentIndices.set(segment, this.documentTree.getSegmentIndex(segment))
+            segmentStartPositions.set(segment, this.documentTree.getSegmentPosition(segment));
+            segmentIndices.set(segment, this.documentTree.getSegmentIndex(segment));
           }
+
+          segment = insertionSplitTree.getSuccessor(segment);
         }
-
-        if (segment === right) break
-        segment = this.documentTree.getSuccessor(segment)
       }
-    }
-  }
 
-  computeChangesForSegments (segmentIndices, segmentStartPositions, oldUndoCounts, newOperations) {
-    const orderedSegments = Array.from(segmentIndices.keys()).sort((s1, s2) => {
-      return segmentIndices.get(s1) - segmentIndices.get(s2)
-    })
+      var deletion = this.deletionsBySpliceId.get(spliceIdString);
 
-    const changes = []
+      if (deletion) {
+        var leftDependencyId = deletion.leftDependencyId,
+            offsetInLeftDependency = deletion.offsetInLeftDependency,
+            rightDependencyId = deletion.rightDependencyId,
+            offsetInRightDependency = deletion.offsetInRightDependency,
+            maxSeqsBySite = deletion.maxSeqsBySite;
+        var left = this.findSegmentStart(leftDependencyId, offsetInLeftDependency);
+        var right = this.findSegmentEnd(rightDependencyId, offsetInRightDependency);
+        var _segment = left;
 
-    let lastChange
-    for (let i = 0; i < orderedSegments.length; i++) {
-      const segment = orderedSegments[i]
-      const visibleBefore = this.isSegmentVisible(segment, oldUndoCounts, newOperations)
-      const visibleAfter = this.isSegmentVisible(segment)
+        while (true) {
+          var maxSeq = maxSeqsBySite[_segment.spliceId.site] || 0;
 
-      if (visibleBefore !== visibleAfter) {
-        const segmentNewStart = segmentStartPositions.get(segment)
-        const segmentOldStart =
-          lastChange
-          ? traverse(lastChange.oldEnd, traversal(segmentNewStart, lastChange.newEnd))
-          : segmentNewStart
-
-        if (visibleBefore) {
-          if (changes.length > 0 && compare(lastChange.newEnd, segmentNewStart) === 0) {
-            lastChange.oldEnd = traverse(lastChange.oldEnd, segment.extent)
-            lastChange.oldText += segment.text
-          } else {
-            lastChange = {
-              oldStart: segmentOldStart,
-              oldEnd: traverse(segmentOldStart, segment.extent),
-              oldText: segment.text,
-              newStart: segmentNewStart,
-              newEnd: segmentNewStart,
-              newText: ''
+          if (_segment.spliceId.seq <= maxSeq) {
+            if (segments) {
+              segments.add(_segment);
+            } else {
+              segmentStartPositions.set(_segment, this.documentTree.getSegmentPosition(_segment));
+              segmentIndices.set(_segment, this.documentTree.getSegmentIndex(_segment));
             }
-            changes.push(lastChange)
           }
-        } else {
-          if (lastChange && compare(lastChange.newEnd, segmentNewStart) === 0) {
-            lastChange.newEnd = traverse(lastChange.newEnd, segment.extent)
-            lastChange.newText += segment.text
-          } else {
-            lastChange = {
-              oldStart: segmentOldStart,
-              oldEnd: segmentOldStart,
-              oldText: '',
-              newStart: segmentNewStart,
-              newEnd: traverse(segmentNewStart, segment.extent),
-              newText: segment.text
-            }
-            changes.push(lastChange)
-          }
+
+          if (_segment === right) break;
+          _segment = this.documentTree.getSuccessor(_segment);
         }
       }
     }
+  }, {
+    key: "computeChangesForSegments",
+    value: function computeChangesForSegments(segmentIndices, segmentStartPositions, oldUndoCounts, newOperations) {
+      var orderedSegments = Array.from(segmentIndices.keys()).sort(function (s1, s2) {
+        return segmentIndices.get(s1) - segmentIndices.get(s2);
+      });
+      var changes = [];
+      var lastChange;
 
-    return changes
-  }
+      for (var i = 0; i < orderedSegments.length; i++) {
+        var segment = orderedSegments[i];
+        var visibleBefore = this.isSegmentVisible(segment, oldUndoCounts, newOperations);
+        var visibleAfter = this.isSegmentVisible(segment);
 
-  isSegmentVisible (segment, undoCountOverrides, operationsToIgnore) {
-    const spliceIdString = spliceIdToString(segment.spliceId)
+        if (visibleBefore !== visibleAfter) {
+          var segmentNewStart = segmentStartPositions.get(segment);
+          var segmentOldStart = lastChange ? traverse(lastChange.oldEnd, traversal(segmentNewStart, lastChange.newEnd)) : segmentNewStart;
 
-    if (operationsToIgnore && operationsToIgnore.has(spliceIdString)) {
-      return false
-    }
-
-    let undoCount
-    if (undoCountOverrides) {
-      undoCount = undoCountOverrides.get(spliceIdString)
-    }
-    if (undoCount == null) {
-      undoCount = this.undoCountsBySpliceId.get(spliceIdString) || 0
-    }
-
-    return (
-      (undoCount & 1) === 0 &&
-      !this.isSegmentDeleted(segment, undoCountOverrides, operationsToIgnore)
-    )
-  }
-
-  isSegmentDeleted (segment, undoCountOverrides, operationsToIgnore) {
-    for (const deletionSpliceIdString of segment.deletions) {
-      if (operationsToIgnore && operationsToIgnore.has(deletionSpliceIdString)) {
-        continue
+          if (visibleBefore) {
+            if (changes.length > 0 && compare(lastChange.newEnd, segmentNewStart) === 0) {
+              lastChange.oldEnd = traverse(lastChange.oldEnd, segment.extent);
+              lastChange.oldText += segment.text;
+            } else {
+              lastChange = {
+                oldStart: segmentOldStart,
+                oldEnd: traverse(segmentOldStart, segment.extent),
+                oldText: segment.text,
+                newStart: segmentNewStart,
+                newEnd: segmentNewStart,
+                newText: ''
+              };
+              changes.push(lastChange);
+            }
+          } else {
+            if (lastChange && compare(lastChange.newEnd, segmentNewStart) === 0) {
+              lastChange.newEnd = traverse(lastChange.newEnd, segment.extent);
+              lastChange.newText += segment.text;
+            } else {
+              lastChange = {
+                oldStart: segmentOldStart,
+                oldEnd: segmentOldStart,
+                oldText: '',
+                newStart: segmentNewStart,
+                newEnd: traverse(segmentNewStart, segment.extent),
+                newText: segment.text
+              };
+              changes.push(lastChange);
+            }
+          }
+        }
       }
 
-      let deletionUndoCount
+      return changes;
+    }
+  }, {
+    key: "isSegmentVisible",
+    value: function isSegmentVisible(segment, undoCountOverrides, operationsToIgnore) {
+      var spliceIdString = spliceIdToString(segment.spliceId);
+
+      if (operationsToIgnore && operationsToIgnore.has(spliceIdString)) {
+        return false;
+      }
+
+      var undoCount;
+
       if (undoCountOverrides) {
-        deletionUndoCount = undoCountOverrides.get(deletionSpliceIdString)
-      }
-      if (deletionUndoCount == null) {
-        deletionUndoCount = this.undoCountsBySpliceId.get(deletionSpliceIdString) || 0
+        undoCount = undoCountOverrides.get(spliceIdString);
       }
 
-      if ((deletionUndoCount & 1) === 0) return true
+      if (undoCount == null) {
+        undoCount = this.undoCountsBySpliceId.get(spliceIdString) || 0;
+      }
+
+      return (undoCount & 1) === 0 && !this.isSegmentDeleted(segment, undoCountOverrides, operationsToIgnore);
     }
-    return false
-  }
+  }, {
+    key: "isSegmentDeleted",
+    value: function isSegmentDeleted(segment, undoCountOverrides, operationsToIgnore) {
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
-  updateMaxSeqsBySite ({site, seq}) {
-    const previousSeq = this.maxSeqsBySite[site] || 0
-    assert.equal(previousSeq, seq - 1, 'Operations from a given site must be applied in order.')
-    this.maxSeqsBySite[site] = seq
-    if (this.siteId === site) this.nextSequenceNumber = seq + 1
-  }
+      try {
+        for (var _iterator = segment.deletions[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var _deletionSpliceIdString = _step.value;
+
+          if (operationsToIgnore && operationsToIgnore.has(_deletionSpliceIdString)) {
+            continue;
+          }
+
+          var deletionUndoCount = void 0;
+
+          if (undoCountOverrides) {
+            deletionUndoCount = undoCountOverrides.get(_deletionSpliceIdString);
+          }
+
+          if (deletionUndoCount == null) {
+            deletionUndoCount = this.undoCountsBySpliceId.get(_deletionSpliceIdString) || 0;
+          }
+
+          if ((deletionUndoCount & 1) === 0) return true;
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator.return != null) {
+            _iterator.return();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      return false;
+    }
+  }, {
+    key: "updateMaxSeqsBySite",
+    value: function updateMaxSeqsBySite(_ref11) {
+      var site = _ref11.site,
+          seq = _ref11.seq;
+      var previousSeq = this.maxSeqsBySite[site] || 0;
+      assert.equal(previousSeq, seq - 1, 'Operations from a given site must be applied in order.');
+      this.maxSeqsBySite[site] = seq;
+      if (this.siteId === site) this.nextSequenceNumber = seq + 1;
+    }
+  }]);
+
+  return Document;
+}();
+
+function spliceIdToString(_ref12) {
+  var site = _ref12.site,
+      seq = _ref12.seq;
+  return site + '.' + seq;
 }
 
-function spliceIdToString ({site, seq}) {
-  return site + '.' + seq
+function isEmptyLogicalRange(_ref13) {
+  var startDependencyId = _ref13.startDependencyId,
+      offsetInStartDependency = _ref13.offsetInStartDependency,
+      endDependencyId = _ref13.endDependencyId,
+      offsetInEndDependency = _ref13.offsetInEndDependency;
+  return spliceIdsEqual(startDependencyId, endDependencyId) && compare(offsetInStartDependency, offsetInEndDependency) === 0;
 }
 
-function isEmptyLogicalRange ({startDependencyId, offsetInStartDependency, endDependencyId, offsetInEndDependency}) {
-  return (
-    spliceIdsEqual(startDependencyId, endDependencyId) &&
-    compare(offsetInStartDependency, offsetInEndDependency) === 0
-  )
+function markersEqual(a, b) {
+  return logicalRangesEqual(a.range, b.range) && a.exclusive === b.exclusive && a.reversed === b.reversed && a.tailed === b.tailed;
 }
 
-function markersEqual (a, b) {
-  return (
-    logicalRangesEqual(a.range, b.range) &&
-    a.exclusive === b.exclusive &&
-    a.reversed === b.reversed &&
-    a.tailed === b.tailed
-  )
+function logicalRangesEqual(a, b) {
+  return spliceIdsEqual(a.startDependencyId, b.startDependencyId) && compare(a.offsetInStartDependency, b.offsetInStartDependency) === 0 && spliceIdsEqual(a.endDependencyId, b.endDependencyId) && compare(a.offsetInEndDependency, b.offsetInEndDependency) === 0;
 }
 
-function logicalRangesEqual (a, b) {
-  return (
-    spliceIdsEqual(a.startDependencyId, b.startDependencyId) &&
-    compare(a.offsetInStartDependency, b.offsetInStartDependency) === 0 &&
-    spliceIdsEqual(a.endDependencyId, b.endDependencyId) &&
-    compare(a.offsetInEndDependency, b.offsetInEndDependency) === 0
-  )
+function spliceIdsEqual(a, b) {
+  return a.site === b.site && a.seq === b.seq;
 }
 
-function spliceIdsEqual (a, b) {
-  return a.site === b.site && a.seq === b.seq
-}
+function invertTextUpdates(textUpdates) {
+  var invertedTextUpdates = [];
 
-function invertTextUpdates (textUpdates) {
-  const invertedTextUpdates = []
-  for (let i = 0; i < textUpdates.length; i++) {
-    const {oldStart, oldEnd, oldText, newStart, newEnd, newText} = textUpdates[i]
+  for (var i = 0; i < textUpdates.length; i++) {
+    var _textUpdates$i = textUpdates[i],
+        oldStart = _textUpdates$i.oldStart,
+        oldEnd = _textUpdates$i.oldEnd,
+        oldText = _textUpdates$i.oldText,
+        newStart = _textUpdates$i.newStart,
+        newEnd = _textUpdates$i.newEnd,
+        newText = _textUpdates$i.newText;
     invertedTextUpdates.push({
       oldStart: newStart,
       oldEnd: newEnd,
@@ -2101,28 +2456,28 @@ function invertTextUpdates (textUpdates) {
       newStart: oldStart,
       newEnd: oldEnd,
       newText: oldText
-    })
+    });
   }
-  return invertedTextUpdates
+
+  return invertedTextUpdates;
 }
 
-class Checkpoint {
-  constructor (id, isBarrier, markersSnapshot) {
-    this.id = id
-    this.isBarrier = isBarrier
-    this.markersSnapshot = markersSnapshot
-  }
-}
+var Checkpoint = function Checkpoint(id, isBarrier, markersSnapshot) {
+  _classCallCheck(this, Checkpoint);
 
-class Transaction {
-  constructor (timestamp, operations, markersSnapshotBefore, markersSnapshotAfter) {
-    this.timestamp = timestamp
-    this.operations = operations
-    this.markersSnapshotBefore = markersSnapshotBefore
-    this.markersSnapshotAfter = markersSnapshotAfter
-  }
-}
+  this.id = id;
+  this.isBarrier = isBarrier;
+  this.markersSnapshot = markersSnapshot;
+};
 
+var Transaction = function Transaction(timestamp, operations, markersSnapshotBefore, markersSnapshotAfter) {
+  _classCallCheck(this, Transaction);
+
+  this.timestamp = timestamp;
+  this.operations = operations;
+  this.markersSnapshotBefore = markersSnapshotBefore;
+  this.markersSnapshotAfter = markersSnapshotAfter;
+};
 
 /***/ }),
 /* 6 */
@@ -2951,516 +3306,630 @@ if (typeof Object.create === 'function') {
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const SplayTree = __webpack_require__(3)
-const {ZERO_POINT, compare, traverse} = __webpack_require__(1)
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SplayTree = __webpack_require__(3);
+
+var _require = __webpack_require__(1),
+    ZERO_POINT = _require.ZERO_POINT,
+    compare = _require.compare,
+    traverse = _require.traverse;
 
 module.exports =
-class DocumentTree extends SplayTree {
-  constructor (firstSegment, lastSegment, isSegmentVisible) {
-    super()
-    this.firstSegment = firstSegment
-    this.firstSegment.documentRight = lastSegment
-    this.firstSegment.documentRight.documentParent = this.firstSegment
-    this.firstSegment.documentLeft = null
-    this.firstSegment.documentSubtreeExtent = ZERO_POINT
-    lastSegment.documentSubtreeExtent = ZERO_POINT
-    this.root = this.firstSegment
-    this.isSegmentVisible = isSegmentVisible
+/*#__PURE__*/
+function (_SplayTree) {
+  _inherits(DocumentTree, _SplayTree);
+
+  function DocumentTree(firstSegment, lastSegment, isSegmentVisible) {
+    var _this;
+
+    _classCallCheck(this, DocumentTree);
+
+    _this = _possibleConstructorReturn(this, (DocumentTree.__proto__ || Object.getPrototypeOf(DocumentTree)).call(this));
+    _this.firstSegment = firstSegment;
+    _this.firstSegment.documentRight = lastSegment;
+    _this.firstSegment.documentRight.documentParent = _this.firstSegment;
+    _this.firstSegment.documentLeft = null;
+    _this.firstSegment.documentSubtreeExtent = ZERO_POINT;
+    lastSegment.documentSubtreeExtent = ZERO_POINT;
+    _this.root = _this.firstSegment;
+    _this.isSegmentVisible = isSegmentVisible;
+    return _this;
   }
 
-  getSegmentIndex (segment) {
-    let index = segment.documentLeft ? segment.documentLeft.documentSubtreeSize : 0
+  _createClass(DocumentTree, [{
+    key: "getSegmentIndex",
+    value: function getSegmentIndex(segment) {
+      var index = segment.documentLeft ? segment.documentLeft.documentSubtreeSize : 0;
 
-    while (segment.documentParent) {
-      if (segment.documentParent.documentRight === segment) {
-        index++
-        if (segment.documentParent.documentLeft) {
-          index += segment.documentParent.documentLeft.documentSubtreeSize
+      while (segment.documentParent) {
+        if (segment.documentParent.documentRight === segment) {
+          index++;
+
+          if (segment.documentParent.documentLeft) {
+            index += segment.documentParent.documentLeft.documentSubtreeSize;
+          }
+        }
+
+        segment = segment.documentParent;
+      }
+
+      return index;
+    }
+  }, {
+    key: "getParent",
+    value: function getParent(node) {
+      return node.documentParent;
+    }
+  }, {
+    key: "setParent",
+    value: function setParent(node, value) {
+      node.documentParent = value;
+    }
+  }, {
+    key: "getLeft",
+    value: function getLeft(node) {
+      return node.documentLeft;
+    }
+  }, {
+    key: "setLeft",
+    value: function setLeft(node, value) {
+      node.documentLeft = value;
+    }
+  }, {
+    key: "getRight",
+    value: function getRight(node) {
+      return node.documentRight;
+    }
+  }, {
+    key: "setRight",
+    value: function setRight(node, value) {
+      node.documentRight = value;
+    }
+  }, {
+    key: "findSegmentContainingPosition",
+    value: function findSegmentContainingPosition(position) {
+      var segment = this.root;
+      var leftAncestorEnd = ZERO_POINT;
+
+      while (segment) {
+        var start = leftAncestorEnd;
+        if (segment.documentLeft) start = traverse(start, segment.documentLeft.documentSubtreeExtent);
+        var end = start;
+        if (this.isSegmentVisible(segment)) end = traverse(end, segment.extent);
+
+        if (compare(position, start) <= 0 && segment !== this.firstSegment) {
+          segment = segment.documentLeft;
+        } else if (compare(position, end) > 0) {
+          leftAncestorEnd = end;
+          segment = segment.documentRight;
+        } else {
+          return {
+            segment: segment,
+            start: start,
+            end: end
+          };
         }
       }
-      segment = segment.documentParent
+
+      throw new Error('No segment found');
     }
+  }, {
+    key: "insertBetween",
+    value: function insertBetween(prev, next, newSegment) {
+      this.splayNode(prev);
+      this.splayNode(next);
+      this.root = newSegment;
+      newSegment.documentLeft = prev;
+      prev.documentParent = newSegment;
+      newSegment.documentRight = next;
+      next.documentParent = newSegment;
+      next.documentLeft = null;
+      this.updateSubtreeExtent(next);
+      this.updateSubtreeExtent(newSegment);
+    }
+  }, {
+    key: "splitSegment",
+    value: function splitSegment(prefix, suffix) {
+      this.splayNode(prefix);
+      this.root = suffix;
+      suffix.documentParent = null;
+      suffix.documentLeft = prefix;
+      prefix.documentParent = suffix;
+      suffix.documentRight = prefix.documentRight;
+      if (suffix.documentRight) suffix.documentRight.documentParent = suffix;
+      prefix.documentRight = null;
+      this.updateSubtreeExtent(prefix);
+      this.updateSubtreeExtent(suffix);
+    }
+  }, {
+    key: "updateSubtreeExtent",
+    value: function updateSubtreeExtent(node, undoCountOverrides) {
+      node.documentSubtreeExtent = ZERO_POINT;
+      node.documentSubtreeSize = 1;
 
-    return index
-  }
+      if (node.documentLeft) {
+        node.documentSubtreeExtent = traverse(node.documentSubtreeExtent, node.documentLeft.documentSubtreeExtent);
+        node.documentSubtreeSize += node.documentLeft.documentSubtreeSize;
+      }
 
-  getParent (node) {
-    return node.documentParent
-  }
+      if (this.isSegmentVisible(node, undoCountOverrides)) {
+        node.documentSubtreeExtent = traverse(node.documentSubtreeExtent, node.extent);
+      }
 
-  setParent (node, value) {
-    node.documentParent = value
-  }
-
-  getLeft (node) {
-    return node.documentLeft
-  }
-
-  setLeft (node, value) {
-    node.documentLeft = value
-  }
-
-  getRight (node) {
-    return node.documentRight
-  }
-
-  setRight (node, value) {
-    node.documentRight = value
-  }
-
-  findSegmentContainingPosition (position) {
-    let segment = this.root
-    let leftAncestorEnd = ZERO_POINT
-    while (segment) {
-      let start = leftAncestorEnd
-      if (segment.documentLeft) start = traverse(start, segment.documentLeft.documentSubtreeExtent)
-      let end = start
-      if (this.isSegmentVisible(segment)) end = traverse(end, segment.extent)
-
-      if (compare(position, start) <= 0 && segment !== this.firstSegment) {
-        segment = segment.documentLeft
-      } else if (compare(position, end) > 0) {
-        leftAncestorEnd = end
-        segment = segment.documentRight
-      } else {
-        return {segment, start, end}
+      if (node.documentRight) {
+        node.documentSubtreeExtent = traverse(node.documentSubtreeExtent, node.documentRight.documentSubtreeExtent);
+        node.documentSubtreeSize += node.documentRight.documentSubtreeSize;
       }
     }
+  }, {
+    key: "getSegmentPosition",
+    value: function getSegmentPosition(segment) {
+      this.splayNode(segment);
 
-    throw new Error('No segment found')
-  }
-
-  insertBetween (prev, next, newSegment) {
-    this.splayNode(prev)
-    this.splayNode(next)
-    this.root = newSegment
-    newSegment.documentLeft = prev
-    prev.documentParent = newSegment
-    newSegment.documentRight = next
-    next.documentParent = newSegment
-    next.documentLeft = null
-    this.updateSubtreeExtent(next)
-    this.updateSubtreeExtent(newSegment)
-  }
-
-  splitSegment (prefix, suffix) {
-    this.splayNode(prefix)
-
-    this.root = suffix
-    suffix.documentParent = null
-    suffix.documentLeft = prefix
-    prefix.documentParent = suffix
-    suffix.documentRight = prefix.documentRight
-    if (suffix.documentRight) suffix.documentRight.documentParent = suffix
-    prefix.documentRight = null
-
-    this.updateSubtreeExtent(prefix)
-    this.updateSubtreeExtent(suffix)
-  }
-
-  updateSubtreeExtent (node, undoCountOverrides) {
-    node.documentSubtreeExtent = ZERO_POINT
-    node.documentSubtreeSize = 1
-    if (node.documentLeft) {
-      node.documentSubtreeExtent = traverse(node.documentSubtreeExtent, node.documentLeft.documentSubtreeExtent)
-      node.documentSubtreeSize += node.documentLeft.documentSubtreeSize
+      if (segment.documentLeft) {
+        return segment.documentLeft.documentSubtreeExtent;
+      } else {
+        return ZERO_POINT;
+      }
     }
-    if (this.isSegmentVisible(node, undoCountOverrides)) {
-      node.documentSubtreeExtent = traverse(node.documentSubtreeExtent, node.extent)
-    }
-    if (node.documentRight) {
-      node.documentSubtreeExtent = traverse(node.documentSubtreeExtent, node.documentRight.documentSubtreeExtent)
-      node.documentSubtreeSize += node.documentRight.documentSubtreeSize
-    }
-  }
+  }, {
+    key: "getSegments",
+    value: function getSegments() {
+      var treeSegments = [];
 
-  getSegmentPosition (segment) {
-    this.splayNode(segment)
-    if (segment.documentLeft) {
-      return segment.documentLeft.documentSubtreeExtent
-    } else {
-      return ZERO_POINT
-    }
-  }
+      function visitTreeInOrder(node) {
+        if (node.documentLeft) visitTreeInOrder(node.documentLeft);
+        treeSegments.push(node);
+        if (node.documentRight) visitTreeInOrder(node.documentRight);
+      }
 
-  getSegments () {
-    const treeSegments = []
-    function visitTreeInOrder (node) {
-      if (node.documentLeft) visitTreeInOrder(node.documentLeft)
-      treeSegments.push(node)
-      if (node.documentRight) visitTreeInOrder(node.documentRight)
+      visitTreeInOrder(this.root);
+      return treeSegments;
     }
-    visitTreeInOrder(this.root)
-    return treeSegments
-  }
-}
+  }]);
 
+  return DocumentTree;
+}(SplayTree);
 
 /***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const SplayTree = __webpack_require__(3)
-const {ZERO_POINT, compare, traverse, traversal, characterIndexForPosition, extentForText} = __webpack_require__(1)
+function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
+
+function _createClass(Constructor, protoProps, staticProps) { if (protoProps) _defineProperties(Constructor.prototype, protoProps); if (staticProps) _defineProperties(Constructor, staticProps); return Constructor; }
+
+function _possibleConstructorReturn(self, call) { if (call && (_typeof(call) === "object" || typeof call === "function")) { return call; } if (self === void 0) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return self; }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function"); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+var SplayTree = __webpack_require__(3);
+
+var _require = __webpack_require__(1),
+    ZERO_POINT = _require.ZERO_POINT,
+    compare = _require.compare,
+    traverse = _require.traverse,
+    traversal = _require.traversal,
+    characterIndexForPosition = _require.characterIndexForPosition,
+    extentForText = _require.extentForText;
 
 module.exports =
-class SplitTree extends SplayTree {
-  constructor (segment) {
-    super()
-    this.startSegment = segment
-    this.startSegment.splitLeft = null
-    this.startSegment.splitRight = null
-    this.startSegment.splitParent = null
-    this.startSegment.splitSubtreeExtent = this.startSegment.extent
-    this.root = this.startSegment
+/*#__PURE__*/
+function (_SplayTree) {
+  _inherits(SplitTree, _SplayTree);
+
+  function SplitTree(segment) {
+    var _this;
+
+    _classCallCheck(this, SplitTree);
+
+    _this = _possibleConstructorReturn(this, (SplitTree.__proto__ || Object.getPrototypeOf(SplitTree)).call(this));
+    _this.startSegment = segment;
+    _this.startSegment.splitLeft = null;
+    _this.startSegment.splitRight = null;
+    _this.startSegment.splitParent = null;
+    _this.startSegment.splitSubtreeExtent = _this.startSegment.extent;
+    _this.root = _this.startSegment;
+    return _this;
   }
 
-  getStart () {
-    return this.startSegment
-  }
+  _createClass(SplitTree, [{
+    key: "getStart",
+    value: function getStart() {
+      return this.startSegment;
+    }
+  }, {
+    key: "getParent",
+    value: function getParent(node) {
+      return node.splitParent;
+    }
+  }, {
+    key: "setParent",
+    value: function setParent(node, value) {
+      node.splitParent = value;
+    }
+  }, {
+    key: "getLeft",
+    value: function getLeft(node) {
+      return node.splitLeft;
+    }
+  }, {
+    key: "setLeft",
+    value: function setLeft(node, value) {
+      node.splitLeft = value;
+    }
+  }, {
+    key: "getRight",
+    value: function getRight(node) {
+      return node.splitRight;
+    }
+  }, {
+    key: "setRight",
+    value: function setRight(node, value) {
+      node.splitRight = value;
+    }
+  }, {
+    key: "updateSubtreeExtent",
+    value: function updateSubtreeExtent(node) {
+      node.splitSubtreeExtent = ZERO_POINT;
+      if (node.splitLeft) node.splitSubtreeExtent = traverse(node.splitSubtreeExtent, node.splitLeft.splitSubtreeExtent);
+      node.splitSubtreeExtent = traverse(node.splitSubtreeExtent, node.extent);
+      if (node.splitRight) node.splitSubtreeExtent = traverse(node.splitSubtreeExtent, node.splitRight.splitSubtreeExtent);
+    }
+  }, {
+    key: "findSegmentContainingOffset",
+    value: function findSegmentContainingOffset(offset) {
+      var segment = this.root;
+      var leftAncestorEnd = ZERO_POINT;
 
-  getParent (node) {
-    return node.splitParent
-  }
+      while (segment) {
+        var start = leftAncestorEnd;
+        if (segment.splitLeft) start = traverse(start, segment.splitLeft.splitSubtreeExtent);
+        var end = traverse(start, segment.extent);
 
-  setParent (node, value) {
-    node.splitParent = value
-  }
-
-  getLeft (node) {
-    return node.splitLeft
-  }
-
-  setLeft (node, value) {
-    node.splitLeft = value
-  }
-
-  getRight (node) {
-    return node.splitRight
-  }
-
-  setRight (node, value) {
-    node.splitRight = value
-  }
-
-  updateSubtreeExtent (node) {
-    node.splitSubtreeExtent = ZERO_POINT
-    if (node.splitLeft) node.splitSubtreeExtent = traverse(node.splitSubtreeExtent, node.splitLeft.splitSubtreeExtent)
-    node.splitSubtreeExtent = traverse(node.splitSubtreeExtent, node.extent)
-    if (node.splitRight) node.splitSubtreeExtent = traverse(node.splitSubtreeExtent, node.splitRight.splitSubtreeExtent)
-  }
-
-  findSegmentContainingOffset (offset) {
-    let segment = this.root
-    let leftAncestorEnd = ZERO_POINT
-    while (segment) {
-      let start = leftAncestorEnd
-      if (segment.splitLeft) start = traverse(start, segment.splitLeft.splitSubtreeExtent)
-      const end = traverse(start, segment.extent)
-
-      if (compare(offset, start) <= 0 && segment.splitLeft) {
-        segment = segment.splitLeft
-      } else if (compare(offset, end) > 0) {
-        leftAncestorEnd = end
-        segment = segment.splitRight
-      } else {
-        this.splayNode(segment)
-        return segment
+        if (compare(offset, start) <= 0 && segment.splitLeft) {
+          segment = segment.splitLeft;
+        } else if (compare(offset, end) > 0) {
+          leftAncestorEnd = end;
+          segment = segment.splitRight;
+        } else {
+          this.splayNode(segment);
+          return segment;
+        }
       }
+
+      throw new Error('No segment found');
     }
-
-    throw new Error('No segment found')
-  }
-
-  splitSegment (segment, offset) {
-    const splitIndex = characterIndexForPosition(segment.text, offset)
-
-    this.splayNode(segment)
-    const suffix = Object.assign({}, segment)
-    suffix.text = segment.text.slice(splitIndex)
-    suffix.extent = traversal(segment.extent, offset)
-
-    suffix.spliceId = Object.assign({}, segment.spliceId)
-    suffix.offset = traverse(suffix.offset, offset)
-    suffix.deletions = new Set(suffix.deletions)
-    segment.text = segment.text.slice(0, splitIndex)
-    segment.extent = offset
-    segment.nextSplit = suffix
-
-    this.root = suffix
-    suffix.splitParent = null
-    suffix.splitLeft = segment
-    segment.splitParent = suffix
-    suffix.splitRight = segment.splitRight
-    if (suffix.splitRight) suffix.splitRight.splitParent = suffix
-    segment.splitRight = null
-
-    this.updateSubtreeExtent(segment)
-    this.updateSubtreeExtent(suffix)
-
-    return suffix
-  }
-
-  getSuccessor (segment) {
-    return segment.nextSplit
-  }
-
-  getSegments () {
-    const segments = []
-    let segment = this.getStart()
-    while (segment) {
-      segments.push(segment)
-      segment = segment.nextSplit
+  }, {
+    key: "splitSegment",
+    value: function splitSegment(segment, offset) {
+      var splitIndex = characterIndexForPosition(segment.text, offset);
+      this.splayNode(segment);
+      var suffix = Object.assign({}, segment);
+      suffix.text = segment.text.slice(splitIndex);
+      suffix.extent = traversal(segment.extent, offset);
+      suffix.spliceId = Object.assign({}, segment.spliceId);
+      suffix.offset = traverse(suffix.offset, offset);
+      suffix.deletions = new Set(suffix.deletions);
+      segment.text = segment.text.slice(0, splitIndex);
+      segment.extent = offset;
+      segment.nextSplit = suffix;
+      this.root = suffix;
+      suffix.splitParent = null;
+      suffix.splitLeft = segment;
+      segment.splitParent = suffix;
+      suffix.splitRight = segment.splitRight;
+      if (suffix.splitRight) suffix.splitRight.splitParent = suffix;
+      segment.splitRight = null;
+      this.updateSubtreeExtent(segment);
+      this.updateSubtreeExtent(suffix);
+      return suffix;
     }
-    return segments
-  }
-}
+  }, {
+    key: "getSuccessor",
+    value: function getSuccessor(segment) {
+      return segment.nextSplit;
+    }
+  }, {
+    key: "getSegments",
+    value: function getSegments() {
+      var segments = [];
+      var segment = this.getStart();
 
+      while (segment) {
+        segments.push(segment);
+        segment = segment.nextSplit;
+      }
+
+      return segments;
+    }
+  }]);
+
+  return SplitTree;
+}(SplayTree);
 
 /***/ }),
 /* 12 */
 /***/ (function(module, exports, __webpack_require__) {
 
-const {Operation} = __webpack_require__(13)
+var _require = __webpack_require__(13),
+    Operation = _require.Operation;
 
-function serializeOperation (op) {
-  const operationMessage = new Operation()
+function serializeOperation(op) {
+  var operationMessage = new Operation();
+
   switch (op.type) {
     case 'splice':
-      operationMessage.setSplice(serializeSplice(op))
-      break
+      operationMessage.setSplice(serializeSplice(op));
+      break;
+
     case 'undo':
-      operationMessage.setUndo(serializeUndo(op))
-      break
+      operationMessage.setUndo(serializeUndo(op));
+      break;
+
     case 'markers-update':
-      operationMessage.setMarkersUpdate(serializeMarkersUpdate(op))
-      break
+      operationMessage.setMarkersUpdate(serializeMarkersUpdate(op));
+      break;
+
     default:
-      throw new Error('Unknown operation type: ' + op.type)
+      throw new Error('Unknown operation type: ' + op.type);
   }
-  return operationMessage
+
+  return operationMessage;
 }
 
-function serializeOperationBinary (op) {
-  return serializeOperation(op).serializeBinary()
+function serializeOperationBinary(op) {
+  return serializeOperation(op).serializeBinary();
 }
 
-function serializeSplice (splice) {
-  const spliceMessage = new Operation.Splice()
-  spliceMessage.setSpliceId(serializeSpliceId(splice.spliceId))
+function serializeSplice(splice) {
+  var spliceMessage = new Operation.Splice();
+  spliceMessage.setSpliceId(serializeSpliceId(splice.spliceId));
+
   if (splice.insertion) {
-    spliceMessage.setInsertion(serializeInsertion(splice.insertion))
+    spliceMessage.setInsertion(serializeInsertion(splice.insertion));
   }
+
   if (splice.deletion) {
-    spliceMessage.setDeletion(serializeDeletion(splice.deletion))
+    spliceMessage.setDeletion(serializeDeletion(splice.deletion));
   }
-  return spliceMessage
+
+  return spliceMessage;
 }
 
-function serializeInsertion (insertion) {
-  const insertionMessage = new Operation.Splice.Insertion()
-  insertionMessage.setText(insertion.text)
-  insertionMessage.setLeftDependencyId(serializeSpliceId(insertion.leftDependencyId))
-  insertionMessage.setOffsetInLeftDependency(serializePoint(insertion.offsetInLeftDependency))
-  insertionMessage.setRightDependencyId(serializeSpliceId(insertion.rightDependencyId))
-  insertionMessage.setOffsetInRightDependency(serializePoint(insertion.offsetInRightDependency))
-  return insertionMessage
+function serializeInsertion(insertion) {
+  var insertionMessage = new Operation.Splice.Insertion();
+  insertionMessage.setText(insertion.text);
+  insertionMessage.setLeftDependencyId(serializeSpliceId(insertion.leftDependencyId));
+  insertionMessage.setOffsetInLeftDependency(serializePoint(insertion.offsetInLeftDependency));
+  insertionMessage.setRightDependencyId(serializeSpliceId(insertion.rightDependencyId));
+  insertionMessage.setOffsetInRightDependency(serializePoint(insertion.offsetInRightDependency));
+  return insertionMessage;
 }
 
-function serializeDeletion (deletion) {
-  const deletionMessage = new Operation.Splice.Deletion()
-  deletionMessage.setLeftDependencyId(serializeSpliceId(deletion.leftDependencyId))
-  deletionMessage.setOffsetInLeftDependency(serializePoint(deletion.offsetInLeftDependency))
-  deletionMessage.setRightDependencyId(serializeSpliceId(deletion.rightDependencyId))
-  deletionMessage.setOffsetInRightDependency(serializePoint(deletion.offsetInRightDependency))
-  const maxSeqsBySiteMessage = deletionMessage.getMaxSeqsBySiteMap()
-  for (const site in deletion.maxSeqsBySite) {
-    maxSeqsBySiteMessage.set(site, deletion.maxSeqsBySite[site])
+function serializeDeletion(deletion) {
+  var deletionMessage = new Operation.Splice.Deletion();
+  deletionMessage.setLeftDependencyId(serializeSpliceId(deletion.leftDependencyId));
+  deletionMessage.setOffsetInLeftDependency(serializePoint(deletion.offsetInLeftDependency));
+  deletionMessage.setRightDependencyId(serializeSpliceId(deletion.rightDependencyId));
+  deletionMessage.setOffsetInRightDependency(serializePoint(deletion.offsetInRightDependency));
+  var maxSeqsBySiteMessage = deletionMessage.getMaxSeqsBySiteMap();
+
+  for (var site in deletion.maxSeqsBySite) {
+    maxSeqsBySiteMessage.set(site, deletion.maxSeqsBySite[site]);
   }
-  return deletionMessage
+
+  return deletionMessage;
 }
 
-function serializeUndo (undo) {
-  const undoMessage = new Operation.Undo()
-  undoMessage.setSpliceId(serializeSpliceId(undo.spliceId))
-  undoMessage.setUndoCount(undo.undoCount)
-  return undoMessage
+function serializeUndo(undo) {
+  var undoMessage = new Operation.Undo();
+  undoMessage.setSpliceId(serializeSpliceId(undo.spliceId));
+  undoMessage.setUndoCount(undo.undoCount);
+  return undoMessage;
 }
 
-function serializeMarkersUpdate ({siteId, updates}) {
-  const markersUpdateMessage = new Operation.MarkersUpdate()
-  markersUpdateMessage.setSiteId(siteId)
-  const layerOperationsMessage = markersUpdateMessage.getLayerOperationsMap()
-  for (const layerId in updates) {
-    const markerUpdates = updates[layerId]
-    const layerOperationMessage = new Operation.MarkersUpdate.LayerOperation()
+function serializeMarkersUpdate(_ref) {
+  var siteId = _ref.siteId,
+      updates = _ref.updates;
+  var markersUpdateMessage = new Operation.MarkersUpdate();
+  markersUpdateMessage.setSiteId(siteId);
+  var layerOperationsMessage = markersUpdateMessage.getLayerOperationsMap();
+
+  for (var layerId in updates) {
+    var markerUpdates = updates[layerId];
+    var layerOperationMessage = new Operation.MarkersUpdate.LayerOperation();
+
     if (markerUpdates) {
-      layerOperationMessage.setIsDeletion(false)
-      const markerOperationsMessage = layerOperationMessage.getMarkerOperationsMap()
-      for (const markerId in markerUpdates) {
-        const markerUpdate = markerUpdates[markerId]
-        const markerOperationMessage = new Operation.MarkersUpdate.MarkerOperation()
+      layerOperationMessage.setIsDeletion(false);
+      var markerOperationsMessage = layerOperationMessage.getMarkerOperationsMap();
+
+      for (var markerId in markerUpdates) {
+        var markerUpdate = markerUpdates[markerId];
+        var markerOperationMessage = new Operation.MarkersUpdate.MarkerOperation();
+
         if (markerUpdate) {
-          markerOperationMessage.setIsDeletion(false)
-          const {range, exclusive, reversed, tailed} = markerUpdate
-          const markerUpdateMessage = new Operation.MarkersUpdate.MarkerUpdate()
-          const logicalRangeMessage = new Operation.MarkersUpdate.LogicalRange()
-          logicalRangeMessage.setStartDependencyId(serializeSpliceId(range.startDependencyId))
-          logicalRangeMessage.setOffsetInStartDependency(serializePoint(range.offsetInStartDependency))
-          logicalRangeMessage.setEndDependencyId(serializeSpliceId(range.endDependencyId))
-          logicalRangeMessage.setOffsetInEndDependency(serializePoint(range.offsetInEndDependency))
-          markerUpdateMessage.setRange(logicalRangeMessage)
-          markerUpdateMessage.setExclusive(exclusive)
-          markerUpdateMessage.setReversed(reversed)
-          markerUpdateMessage.setTailed(tailed)
-          markerOperationMessage.setMarkerUpdate(markerUpdateMessage)
+          markerOperationMessage.setIsDeletion(false);
+          var range = markerUpdate.range,
+              exclusive = markerUpdate.exclusive,
+              reversed = markerUpdate.reversed,
+              tailed = markerUpdate.tailed;
+          var markerUpdateMessage = new Operation.MarkersUpdate.MarkerUpdate();
+          var logicalRangeMessage = new Operation.MarkersUpdate.LogicalRange();
+          logicalRangeMessage.setStartDependencyId(serializeSpliceId(range.startDependencyId));
+          logicalRangeMessage.setOffsetInStartDependency(serializePoint(range.offsetInStartDependency));
+          logicalRangeMessage.setEndDependencyId(serializeSpliceId(range.endDependencyId));
+          logicalRangeMessage.setOffsetInEndDependency(serializePoint(range.offsetInEndDependency));
+          markerUpdateMessage.setRange(logicalRangeMessage);
+          markerUpdateMessage.setExclusive(exclusive);
+          markerUpdateMessage.setReversed(reversed);
+          markerUpdateMessage.setTailed(tailed);
+          markerOperationMessage.setMarkerUpdate(markerUpdateMessage);
         } else {
-          markerOperationMessage.setIsDeletion(true)
+          markerOperationMessage.setIsDeletion(true);
         }
-        markerOperationsMessage.set(markerId, markerOperationMessage)
+
+        markerOperationsMessage.set(markerId, markerOperationMessage);
       }
     } else {
-      layerOperationMessage.setIsDeletion(true)
+      layerOperationMessage.setIsDeletion(true);
     }
-    layerOperationsMessage.set(layerId, layerOperationMessage)
+
+    layerOperationsMessage.set(layerId, layerOperationMessage);
   }
-  return markersUpdateMessage
+
+  return markersUpdateMessage;
 }
 
-function serializeSpliceId ({site, seq}) {
-  const spliceIdMessage = new Operation.SpliceId()
-  spliceIdMessage.setSite(site)
-  spliceIdMessage.setSeq(seq)
-  return spliceIdMessage
+function serializeSpliceId(_ref2) {
+  var site = _ref2.site,
+      seq = _ref2.seq;
+  var spliceIdMessage = new Operation.SpliceId();
+  spliceIdMessage.setSite(site);
+  spliceIdMessage.setSeq(seq);
+  return spliceIdMessage;
 }
 
-function serializePoint ({row, column}) {
-  const pointMessage = new Operation.Point()
-  pointMessage.setRow(row)
-  pointMessage.setColumn(column)
-  return pointMessage
+function serializePoint(_ref3) {
+  var row = _ref3.row,
+      column = _ref3.column;
+  var pointMessage = new Operation.Point();
+  pointMessage.setRow(row);
+  pointMessage.setColumn(column);
+  return pointMessage;
 }
 
-function deserializeOperation (operationMessage) {
+function deserializeOperation(operationMessage) {
   if (operationMessage.hasSplice()) {
-    return deserializeSplice(operationMessage.getSplice())
+    return deserializeSplice(operationMessage.getSplice());
   } else if (operationMessage.hasUndo()) {
-    return deserializeUndo(operationMessage.getUndo())
+    return deserializeUndo(operationMessage.getUndo());
   } else if (operationMessage.hasMarkersUpdate()) {
-    return deserializeMarkersUpdate(operationMessage.getMarkersUpdate())
+    return deserializeMarkersUpdate(operationMessage.getMarkersUpdate());
   } else {
-    throw new Error('Unknown operation type')
+    throw new Error('Unknown operation type');
   }
 }
 
-function deserializeOperationBinary (data) {
-  return deserializeOperation(Operation.deserializeBinary(data))
+function deserializeOperationBinary(data) {
+  return deserializeOperation(Operation.deserializeBinary(data));
 }
 
-function deserializeSplice (spliceMessage) {
-  const insertionMessage = spliceMessage.getInsertion()
-  const deletionMessage = spliceMessage.getDeletion()
+function deserializeSplice(spliceMessage) {
+  var insertionMessage = spliceMessage.getInsertion();
+  var deletionMessage = spliceMessage.getDeletion();
   return {
     type: 'splice',
     spliceId: deserializeSpliceId(spliceMessage.getSpliceId()),
     insertion: insertionMessage ? deserializeInsertion(insertionMessage) : null,
     deletion: deletionMessage ? deserializeDeletion(deletionMessage) : null
-  }
+  };
 }
 
-function deserializeInsertion (insertionMessage) {
+function deserializeInsertion(insertionMessage) {
   return {
     text: insertionMessage.getText(),
     leftDependencyId: deserializeSpliceId(insertionMessage.getLeftDependencyId()),
     offsetInLeftDependency: deserializePoint(insertionMessage.getOffsetInLeftDependency()),
     rightDependencyId: deserializeSpliceId(insertionMessage.getRightDependencyId()),
     offsetInRightDependency: deserializePoint(insertionMessage.getOffsetInRightDependency())
-  }
+  };
 }
 
-function deserializeDeletion (deletionMessage) {
-  const maxSeqsBySite = {}
-  deletionMessage.getMaxSeqsBySiteMap().forEach((seq, site) => {
-    maxSeqsBySite[site] = seq
-  })
+function deserializeDeletion(deletionMessage) {
+  var maxSeqsBySite = {};
+  deletionMessage.getMaxSeqsBySiteMap().forEach(function (seq, site) {
+    maxSeqsBySite[site] = seq;
+  });
   return {
     leftDependencyId: deserializeSpliceId(deletionMessage.getLeftDependencyId()),
     offsetInLeftDependency: deserializePoint(deletionMessage.getOffsetInLeftDependency()),
     rightDependencyId: deserializeSpliceId(deletionMessage.getRightDependencyId()),
     offsetInRightDependency: deserializePoint(deletionMessage.getOffsetInRightDependency()),
-    maxSeqsBySite
-  }
+    maxSeqsBySite: maxSeqsBySite
+  };
 }
 
-function deserializeUndo (undoMessage) {
+function deserializeUndo(undoMessage) {
   return {
     type: 'undo',
     spliceId: deserializeSpliceId(undoMessage.getSpliceId()),
     undoCount: undoMessage.getUndoCount()
-  }
+  };
 }
 
-function deserializeMarkersUpdate (markersUpdateMessage) {
-  const updates = {}
-
-  markersUpdateMessage.getLayerOperationsMap().forEach((layerOperation, layerId) => {
+function deserializeMarkersUpdate(markersUpdateMessage) {
+  var updates = {};
+  markersUpdateMessage.getLayerOperationsMap().forEach(function (layerOperation, layerId) {
     if (layerOperation.getIsDeletion()) {
-      updates[layerId] = null
+      updates[layerId] = null;
     } else {
-      const markerUpdates = {}
-
-      layerOperation.getMarkerOperationsMap().forEach((markerOperation, markerId) => {
+      var markerUpdates = {};
+      layerOperation.getMarkerOperationsMap().forEach(function (markerOperation, markerId) {
         if (markerOperation.getIsDeletion()) {
-          markerUpdates[markerId] = null
+          markerUpdates[markerId] = null;
         } else {
-          const markerUpdateMessage = markerOperation.getMarkerUpdate()
-          const rangeMessage = markerUpdateMessage.getRange()
-          const range = {
+          var markerUpdateMessage = markerOperation.getMarkerUpdate();
+          var rangeMessage = markerUpdateMessage.getRange();
+          var range = {
             startDependencyId: deserializeSpliceId(rangeMessage.getStartDependencyId()),
             offsetInStartDependency: deserializePoint(rangeMessage.getOffsetInStartDependency()),
             endDependencyId: deserializeSpliceId(rangeMessage.getEndDependencyId()),
             offsetInEndDependency: deserializePoint(rangeMessage.getOffsetInEndDependency())
-          }
-
+          };
           markerUpdates[markerId] = {
-            range,
+            range: range,
             exclusive: markerUpdateMessage.getExclusive(),
             reversed: markerUpdateMessage.getReversed(),
             tailed: markerUpdateMessage.getTailed()
-          }
+          };
         }
-      })
-
-      updates[layerId] = markerUpdates
+      });
+      updates[layerId] = markerUpdates;
     }
-  })
-
+  });
   return {
     type: 'markers-update',
     siteId: markersUpdateMessage.getSiteId(),
-    updates
-  }
+    updates: updates
+  };
 }
 
-function deserializeSpliceId (spliceIdMessage) {
+function deserializeSpliceId(spliceIdMessage) {
   return {
     site: spliceIdMessage.getSite(),
     seq: spliceIdMessage.getSeq()
-  }
+  };
 }
 
-function deserializePoint (pointMessage) {
+function deserializePoint(pointMessage) {
   return {
     row: pointMessage.getRow(),
     column: pointMessage.getColumn()
-  }
+  };
 }
 
 module.exports = {
-  serializeOperation, deserializeOperation,
-  serializeOperationBinary, deserializeOperationBinary,
-}
-
+  serializeOperation: serializeOperation,
+  deserializeOperation: deserializeOperation,
+  serializeOperationBinary: serializeOperationBinary,
+  deserializeOperationBinary: deserializeOperationBinary
+};
 
 /***/ }),
 /* 13 */
@@ -3474,11 +3943,10 @@ module.exports = {
  * @public
  */
 // GENERATED CODE -- DO NOT EDIT!
-
 var jspb = __webpack_require__(14);
+
 var goog = jspb;
 var global = Function('return this')();
-
 goog.exportSymbol('proto.Operation', null, global);
 goog.exportSymbol('proto.Operation.MarkersUpdate', null, global);
 goog.exportSymbol('proto.Operation.MarkersUpdate.LayerOperation', null, global);
@@ -3491,7 +3959,6 @@ goog.exportSymbol('proto.Operation.Splice.Deletion', null, global);
 goog.exportSymbol('proto.Operation.Splice.Insertion', null, global);
 goog.exportSymbol('proto.Operation.SpliceId', null, global);
 goog.exportSymbol('proto.Operation.Undo', null, global);
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -3502,10 +3969,13 @@ goog.exportSymbol('proto.Operation.Undo', null, global);
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation = function(opt_data) {
+
+proto.Operation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, proto.Operation.oneofGroups_);
 };
+
 goog.inherits(proto.Operation, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.displayName = 'proto.Operation';
 }
@@ -3517,79 +3987,82 @@ if (goog.DEBUG && !COMPILED) {
  * @private {!Array<!Array<number>>}
  * @const
  */
-proto.Operation.oneofGroups_ = [[1,2,3]];
 
+
+proto.Operation.oneofGroups_ = [[1, 2, 3]];
 /**
  * @enum {number}
  */
+
 proto.Operation.VariantCase = {
   VARIANT_NOT_SET: 0,
   SPLICE: 1,
   UNDO: 2,
   MARKERS_UPDATE: 3
 };
-
 /**
  * @return {proto.Operation.VariantCase}
  */
-proto.Operation.prototype.getVariantCase = function() {
-  return /** @type {proto.Operation.VariantCase} */(jspb.Message.computeOneofCase(this, proto.Operation.oneofGroups_[0]));
+
+proto.Operation.prototype.getVariantCase = function () {
+  return (
+    /** @type {proto.Operation.VariantCase} */
+    jspb.Message.computeOneofCase(this, proto.Operation.oneofGroups_[0])
+  );
 };
-
-
 
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    splice: (f = msg.getSplice()) && proto.Operation.Splice.toObject(includeInstance, f),
-    undo: (f = msg.getUndo()) && proto.Operation.Undo.toObject(includeInstance, f),
-    markersUpdate: (f = msg.getMarkersUpdate()) && proto.Operation.MarkersUpdate.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      splice: (f = msg.getSplice()) && proto.Operation.Splice.toObject(includeInstance, f),
+      undo: (f = msg.getUndo()) && proto.Operation.Undo.toObject(includeInstance, f),
+      markersUpdate: (f = msg.getMarkersUpdate()) && proto.Operation.MarkersUpdate.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation}
  */
-proto.Operation.deserializeBinary = function(bytes) {
+
+
+proto.Operation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation;
+  var msg = new proto.Operation();
   return proto.Operation.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -3597,48 +4070,54 @@ proto.Operation.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation}
  */
-proto.Operation.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = new proto.Operation.Splice;
-      reader.readMessage(value,proto.Operation.Splice.deserializeBinaryFromReader);
-      msg.setSplice(value);
-      break;
-    case 2:
-      var value = new proto.Operation.Undo;
-      reader.readMessage(value,proto.Operation.Undo.deserializeBinaryFromReader);
-      msg.setUndo(value);
-      break;
-    case 3:
-      var value = new proto.Operation.MarkersUpdate;
-      reader.readMessage(value,proto.Operation.MarkersUpdate.deserializeBinaryFromReader);
-      msg.setMarkersUpdate(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.Operation.Splice();
+        reader.readMessage(value, proto.Operation.Splice.deserializeBinaryFromReader);
+        msg.setSplice(value);
+        break;
+
+      case 2:
+        var value = new proto.Operation.Undo();
+        reader.readMessage(value, proto.Operation.Undo.deserializeBinaryFromReader);
+        msg.setUndo(value);
+        break;
+
+      case 3:
+        var value = new proto.Operation.MarkersUpdate();
+        reader.readMessage(value, proto.Operation.MarkersUpdate.deserializeBinaryFromReader);
+        msg.setMarkersUpdate(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.prototype.serializeBinary = function() {
+
+
+proto.Operation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -3646,36 +4125,28 @@ proto.Operation.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getSplice();
+
   if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.Operation.Splice.serializeBinaryToWriter
-    );
+    writer.writeMessage(1, f, proto.Operation.Splice.serializeBinaryToWriter);
   }
+
   f = message.getUndo();
+
   if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.Operation.Undo.serializeBinaryToWriter
-    );
+    writer.writeMessage(2, f, proto.Operation.Undo.serializeBinaryToWriter);
   }
+
   f = message.getMarkersUpdate();
+
   if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.Operation.MarkersUpdate.serializeBinaryToWriter
-    );
+    writer.writeMessage(3, f, proto.Operation.MarkersUpdate.serializeBinaryToWriter);
   }
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -3686,67 +4157,70 @@ proto.Operation.serializeBinaryToWriter = function(message, writer) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.Splice = function(opt_data) {
+
+
+proto.Operation.Splice = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.Splice, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.Splice.displayName = 'proto.Operation.Splice';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.Splice.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.Splice.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.Splice} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.Splice.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    spliceId: (f = msg.getSpliceId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    insertion: (f = msg.getInsertion()) && proto.Operation.Splice.Insertion.toObject(includeInstance, f),
-    deletion: (f = msg.getDeletion()) && proto.Operation.Splice.Deletion.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.Splice.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.Splice.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.Splice} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.Splice.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      spliceId: (f = msg.getSpliceId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      insertion: (f = msg.getInsertion()) && proto.Operation.Splice.Insertion.toObject(includeInstance, f),
+      deletion: (f = msg.getDeletion()) && proto.Operation.Splice.Deletion.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.Splice}
  */
-proto.Operation.Splice.deserializeBinary = function(bytes) {
+
+
+proto.Operation.Splice.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.Splice;
+  var msg = new proto.Operation.Splice();
   return proto.Operation.Splice.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -3754,48 +4228,54 @@ proto.Operation.Splice.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.Splice}
  */
-proto.Operation.Splice.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.Splice.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setSpliceId(value);
-      break;
-    case 2:
-      var value = new proto.Operation.Splice.Insertion;
-      reader.readMessage(value,proto.Operation.Splice.Insertion.deserializeBinaryFromReader);
-      msg.setInsertion(value);
-      break;
-    case 3:
-      var value = new proto.Operation.Splice.Deletion;
-      reader.readMessage(value,proto.Operation.Splice.Deletion.deserializeBinaryFromReader);
-      msg.setDeletion(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setSpliceId(value);
+        break;
+
+      case 2:
+        var value = new proto.Operation.Splice.Insertion();
+        reader.readMessage(value, proto.Operation.Splice.Insertion.deserializeBinaryFromReader);
+        msg.setInsertion(value);
+        break;
+
+      case 3:
+        var value = new proto.Operation.Splice.Deletion();
+        reader.readMessage(value, proto.Operation.Splice.Deletion.deserializeBinaryFromReader);
+        msg.setDeletion(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.Splice.prototype.serializeBinary = function() {
+
+
+proto.Operation.Splice.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.Splice.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -3803,36 +4283,28 @@ proto.Operation.Splice.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.Splice.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.Splice.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getSpliceId();
+
   if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(1, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getInsertion();
+
   if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.Operation.Splice.Insertion.serializeBinaryToWriter
-    );
+    writer.writeMessage(2, f, proto.Operation.Splice.Insertion.serializeBinaryToWriter);
   }
+
   f = message.getDeletion();
+
   if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.Operation.Splice.Deletion.serializeBinaryToWriter
-    );
+    writer.writeMessage(3, f, proto.Operation.Splice.Deletion.serializeBinaryToWriter);
   }
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -3843,69 +4315,72 @@ proto.Operation.Splice.serializeBinaryToWriter = function(message, writer) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.Splice.Insertion = function(opt_data) {
+
+
+proto.Operation.Splice.Insertion = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.Splice.Insertion, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.Splice.Insertion.displayName = 'proto.Operation.Splice.Insertion';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.Splice.Insertion.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.Splice.Insertion.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.Splice.Insertion} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.Splice.Insertion.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    text: jspb.Message.getFieldWithDefault(msg, 2, ""),
-    leftDependencyId: (f = msg.getLeftDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    offsetInLeftDependency: (f = msg.getOffsetInLeftDependency()) && proto.Operation.Point.toObject(includeInstance, f),
-    rightDependencyId: (f = msg.getRightDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    offsetInRightDependency: (f = msg.getOffsetInRightDependency()) && proto.Operation.Point.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.Splice.Insertion.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.Splice.Insertion.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.Splice.Insertion} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.Splice.Insertion.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      text: jspb.Message.getFieldWithDefault(msg, 2, ""),
+      leftDependencyId: (f = msg.getLeftDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      offsetInLeftDependency: (f = msg.getOffsetInLeftDependency()) && proto.Operation.Point.toObject(includeInstance, f),
+      rightDependencyId: (f = msg.getRightDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      offsetInRightDependency: (f = msg.getOffsetInRightDependency()) && proto.Operation.Point.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.Splice.Insertion}
  */
-proto.Operation.Splice.Insertion.deserializeBinary = function(bytes) {
+
+
+proto.Operation.Splice.Insertion.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.Splice.Insertion;
+  var msg = new proto.Operation.Splice.Insertion();
   return proto.Operation.Splice.Insertion.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -3913,57 +4388,67 @@ proto.Operation.Splice.Insertion.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.Splice.Insertion}
  */
-proto.Operation.Splice.Insertion.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.Splice.Insertion.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 2:
-      var value = /** @type {string} */ (reader.readString());
-      msg.setText(value);
-      break;
-    case 3:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setLeftDependencyId(value);
-      break;
-    case 4:
-      var value = new proto.Operation.Point;
-      reader.readMessage(value,proto.Operation.Point.deserializeBinaryFromReader);
-      msg.setOffsetInLeftDependency(value);
-      break;
-    case 5:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setRightDependencyId(value);
-      break;
-    case 6:
-      var value = new proto.Operation.Point;
-      reader.readMessage(value,proto.Operation.Point.deserializeBinaryFromReader);
-      msg.setOffsetInRightDependency(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 2:
+        var value =
+        /** @type {string} */
+        reader.readString();
+        msg.setText(value);
+        break;
+
+      case 3:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setLeftDependencyId(value);
+        break;
+
+      case 4:
+        var value = new proto.Operation.Point();
+        reader.readMessage(value, proto.Operation.Point.deserializeBinaryFromReader);
+        msg.setOffsetInLeftDependency(value);
+        break;
+
+      case 5:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setRightDependencyId(value);
+        break;
+
+      case 6:
+        var value = new proto.Operation.Point();
+        reader.readMessage(value, proto.Operation.Point.deserializeBinaryFromReader);
+        msg.setOffsetInRightDependency(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.Splice.Insertion.prototype.serializeBinary = function() {
+
+
+proto.Operation.Splice.Insertion.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.Splice.Insertion.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -3971,186 +4456,182 @@ proto.Operation.Splice.Insertion.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.Splice.Insertion.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.Splice.Insertion.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getText();
+
   if (f.length > 0) {
-    writer.writeString(
-      2,
-      f
-    );
+    writer.writeString(2, f);
   }
+
   f = message.getLeftDependencyId();
+
   if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(3, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getOffsetInLeftDependency();
+
   if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      proto.Operation.Point.serializeBinaryToWriter
-    );
+    writer.writeMessage(4, f, proto.Operation.Point.serializeBinaryToWriter);
   }
+
   f = message.getRightDependencyId();
+
   if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(5, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getOffsetInRightDependency();
+
   if (f != null) {
-    writer.writeMessage(
-      6,
-      f,
-      proto.Operation.Point.serializeBinaryToWriter
-    );
+    writer.writeMessage(6, f, proto.Operation.Point.serializeBinaryToWriter);
   }
 };
-
-
 /**
  * optional string text = 2;
  * @return {string}
  */
-proto.Operation.Splice.Insertion.prototype.getText = function() {
-  return /** @type {string} */ (jspb.Message.getFieldWithDefault(this, 2, ""));
+
+
+proto.Operation.Splice.Insertion.prototype.getText = function () {
+  return (
+    /** @type {string} */
+    jspb.Message.getFieldWithDefault(this, 2, "")
+  );
 };
-
-
 /** @param {string} value */
-proto.Operation.Splice.Insertion.prototype.setText = function(value) {
+
+
+proto.Operation.Splice.Insertion.prototype.setText = function (value) {
   jspb.Message.setField(this, 2, value);
 };
-
-
 /**
  * optional SpliceId left_dependency_id = 3;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.Splice.Insertion.prototype.getLeftDependencyId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 3));
+
+
+proto.Operation.Splice.Insertion.prototype.getLeftDependencyId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 3)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.Splice.Insertion.prototype.setLeftDependencyId = function(value) {
+
+
+proto.Operation.Splice.Insertion.prototype.setLeftDependencyId = function (value) {
   jspb.Message.setWrapperField(this, 3, value);
 };
 
-
-proto.Operation.Splice.Insertion.prototype.clearLeftDependencyId = function() {
+proto.Operation.Splice.Insertion.prototype.clearLeftDependencyId = function () {
   this.setLeftDependencyId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Insertion.prototype.hasLeftDependencyId = function() {
+
+
+proto.Operation.Splice.Insertion.prototype.hasLeftDependencyId = function () {
   return jspb.Message.getField(this, 3) != null;
 };
-
-
 /**
  * optional Point offset_in_left_dependency = 4;
  * @return {?proto.Operation.Point}
  */
-proto.Operation.Splice.Insertion.prototype.getOffsetInLeftDependency = function() {
-  return /** @type{?proto.Operation.Point} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Point, 4));
+
+
+proto.Operation.Splice.Insertion.prototype.getOffsetInLeftDependency = function () {
+  return (
+    /** @type{?proto.Operation.Point} */
+    jspb.Message.getWrapperField(this, proto.Operation.Point, 4)
+  );
 };
-
-
 /** @param {?proto.Operation.Point|undefined} value */
-proto.Operation.Splice.Insertion.prototype.setOffsetInLeftDependency = function(value) {
+
+
+proto.Operation.Splice.Insertion.prototype.setOffsetInLeftDependency = function (value) {
   jspb.Message.setWrapperField(this, 4, value);
 };
 
-
-proto.Operation.Splice.Insertion.prototype.clearOffsetInLeftDependency = function() {
+proto.Operation.Splice.Insertion.prototype.clearOffsetInLeftDependency = function () {
   this.setOffsetInLeftDependency(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Insertion.prototype.hasOffsetInLeftDependency = function() {
+
+
+proto.Operation.Splice.Insertion.prototype.hasOffsetInLeftDependency = function () {
   return jspb.Message.getField(this, 4) != null;
 };
-
-
 /**
  * optional SpliceId right_dependency_id = 5;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.Splice.Insertion.prototype.getRightDependencyId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 5));
+
+
+proto.Operation.Splice.Insertion.prototype.getRightDependencyId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 5)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.Splice.Insertion.prototype.setRightDependencyId = function(value) {
+
+
+proto.Operation.Splice.Insertion.prototype.setRightDependencyId = function (value) {
   jspb.Message.setWrapperField(this, 5, value);
 };
 
-
-proto.Operation.Splice.Insertion.prototype.clearRightDependencyId = function() {
+proto.Operation.Splice.Insertion.prototype.clearRightDependencyId = function () {
   this.setRightDependencyId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Insertion.prototype.hasRightDependencyId = function() {
+
+
+proto.Operation.Splice.Insertion.prototype.hasRightDependencyId = function () {
   return jspb.Message.getField(this, 5) != null;
 };
-
-
 /**
  * optional Point offset_in_right_dependency = 6;
  * @return {?proto.Operation.Point}
  */
-proto.Operation.Splice.Insertion.prototype.getOffsetInRightDependency = function() {
-  return /** @type{?proto.Operation.Point} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Point, 6));
+
+
+proto.Operation.Splice.Insertion.prototype.getOffsetInRightDependency = function () {
+  return (
+    /** @type{?proto.Operation.Point} */
+    jspb.Message.getWrapperField(this, proto.Operation.Point, 6)
+  );
 };
-
-
 /** @param {?proto.Operation.Point|undefined} value */
-proto.Operation.Splice.Insertion.prototype.setOffsetInRightDependency = function(value) {
+
+
+proto.Operation.Splice.Insertion.prototype.setOffsetInRightDependency = function (value) {
   jspb.Message.setWrapperField(this, 6, value);
 };
 
-
-proto.Operation.Splice.Insertion.prototype.clearOffsetInRightDependency = function() {
+proto.Operation.Splice.Insertion.prototype.clearOffsetInRightDependency = function () {
   this.setOffsetInRightDependency(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Insertion.prototype.hasOffsetInRightDependency = function() {
+
+
+proto.Operation.Splice.Insertion.prototype.hasOffsetInRightDependency = function () {
   return jspb.Message.getField(this, 6) != null;
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -4161,69 +4642,72 @@ proto.Operation.Splice.Insertion.prototype.hasOffsetInRightDependency = function
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.Splice.Deletion = function(opt_data) {
+
+
+proto.Operation.Splice.Deletion = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.Splice.Deletion, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.Splice.Deletion.displayName = 'proto.Operation.Splice.Deletion';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.Splice.Deletion.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.Splice.Deletion.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.Splice.Deletion} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.Splice.Deletion.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    leftDependencyId: (f = msg.getLeftDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    offsetInLeftDependency: (f = msg.getOffsetInLeftDependency()) && proto.Operation.Point.toObject(includeInstance, f),
-    rightDependencyId: (f = msg.getRightDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    offsetInRightDependency: (f = msg.getOffsetInRightDependency()) && proto.Operation.Point.toObject(includeInstance, f),
-    maxSeqsBySiteMap: (f = msg.getMaxSeqsBySiteMap()) ? f.toObject(includeInstance, undefined) : []
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.Splice.Deletion.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.Splice.Deletion.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.Splice.Deletion} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.Splice.Deletion.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      leftDependencyId: (f = msg.getLeftDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      offsetInLeftDependency: (f = msg.getOffsetInLeftDependency()) && proto.Operation.Point.toObject(includeInstance, f),
+      rightDependencyId: (f = msg.getRightDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      offsetInRightDependency: (f = msg.getOffsetInRightDependency()) && proto.Operation.Point.toObject(includeInstance, f),
+      maxSeqsBySiteMap: (f = msg.getMaxSeqsBySiteMap()) ? f.toObject(includeInstance, undefined) : []
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.Splice.Deletion}
  */
-proto.Operation.Splice.Deletion.deserializeBinary = function(bytes) {
+
+
+proto.Operation.Splice.Deletion.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.Splice.Deletion;
+  var msg = new proto.Operation.Splice.Deletion();
   return proto.Operation.Splice.Deletion.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -4231,59 +4715,67 @@ proto.Operation.Splice.Deletion.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.Splice.Deletion}
  */
-proto.Operation.Splice.Deletion.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.Splice.Deletion.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 2:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setLeftDependencyId(value);
-      break;
-    case 3:
-      var value = new proto.Operation.Point;
-      reader.readMessage(value,proto.Operation.Point.deserializeBinaryFromReader);
-      msg.setOffsetInLeftDependency(value);
-      break;
-    case 4:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setRightDependencyId(value);
-      break;
-    case 5:
-      var value = new proto.Operation.Point;
-      reader.readMessage(value,proto.Operation.Point.deserializeBinaryFromReader);
-      msg.setOffsetInRightDependency(value);
-      break;
-    case 6:
-      var value = msg.getMaxSeqsBySiteMap();
-      reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readUint32);
-         });
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 2:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setLeftDependencyId(value);
+        break;
+
+      case 3:
+        var value = new proto.Operation.Point();
+        reader.readMessage(value, proto.Operation.Point.deserializeBinaryFromReader);
+        msg.setOffsetInLeftDependency(value);
+        break;
+
+      case 4:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setRightDependencyId(value);
+        break;
+
+      case 5:
+        var value = new proto.Operation.Point();
+        reader.readMessage(value, proto.Operation.Point.deserializeBinaryFromReader);
+        msg.setOffsetInRightDependency(value);
+        break;
+
+      case 6:
+        var value = msg.getMaxSeqsBySiteMap();
+        reader.readMessage(value, function (message, reader) {
+          jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readUint32);
+        });
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.Splice.Deletion.prototype.serializeBinary = function() {
+
+
+proto.Operation.Splice.Deletion.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.Splice.Deletion.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -4291,276 +4783,275 @@ proto.Operation.Splice.Deletion.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.Splice.Deletion.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.Splice.Deletion.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getLeftDependencyId();
+
   if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(2, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getOffsetInLeftDependency();
+
   if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.Operation.Point.serializeBinaryToWriter
-    );
+    writer.writeMessage(3, f, proto.Operation.Point.serializeBinaryToWriter);
   }
+
   f = message.getRightDependencyId();
+
   if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(4, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getOffsetInRightDependency();
+
   if (f != null) {
-    writer.writeMessage(
-      5,
-      f,
-      proto.Operation.Point.serializeBinaryToWriter
-    );
+    writer.writeMessage(5, f, proto.Operation.Point.serializeBinaryToWriter);
   }
+
   f = message.getMaxSeqsBySiteMap(true);
+
   if (f && f.getLength() > 0) {
     f.serializeBinary(6, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeUint32);
   }
 };
-
-
 /**
  * optional SpliceId left_dependency_id = 2;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.Splice.Deletion.prototype.getLeftDependencyId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 2));
+
+
+proto.Operation.Splice.Deletion.prototype.getLeftDependencyId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 2)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.Splice.Deletion.prototype.setLeftDependencyId = function(value) {
+
+
+proto.Operation.Splice.Deletion.prototype.setLeftDependencyId = function (value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
-
-proto.Operation.Splice.Deletion.prototype.clearLeftDependencyId = function() {
+proto.Operation.Splice.Deletion.prototype.clearLeftDependencyId = function () {
   this.setLeftDependencyId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Deletion.prototype.hasLeftDependencyId = function() {
+
+
+proto.Operation.Splice.Deletion.prototype.hasLeftDependencyId = function () {
   return jspb.Message.getField(this, 2) != null;
 };
-
-
 /**
  * optional Point offset_in_left_dependency = 3;
  * @return {?proto.Operation.Point}
  */
-proto.Operation.Splice.Deletion.prototype.getOffsetInLeftDependency = function() {
-  return /** @type{?proto.Operation.Point} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Point, 3));
+
+
+proto.Operation.Splice.Deletion.prototype.getOffsetInLeftDependency = function () {
+  return (
+    /** @type{?proto.Operation.Point} */
+    jspb.Message.getWrapperField(this, proto.Operation.Point, 3)
+  );
 };
-
-
 /** @param {?proto.Operation.Point|undefined} value */
-proto.Operation.Splice.Deletion.prototype.setOffsetInLeftDependency = function(value) {
+
+
+proto.Operation.Splice.Deletion.prototype.setOffsetInLeftDependency = function (value) {
   jspb.Message.setWrapperField(this, 3, value);
 };
 
-
-proto.Operation.Splice.Deletion.prototype.clearOffsetInLeftDependency = function() {
+proto.Operation.Splice.Deletion.prototype.clearOffsetInLeftDependency = function () {
   this.setOffsetInLeftDependency(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Deletion.prototype.hasOffsetInLeftDependency = function() {
+
+
+proto.Operation.Splice.Deletion.prototype.hasOffsetInLeftDependency = function () {
   return jspb.Message.getField(this, 3) != null;
 };
-
-
 /**
  * optional SpliceId right_dependency_id = 4;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.Splice.Deletion.prototype.getRightDependencyId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 4));
+
+
+proto.Operation.Splice.Deletion.prototype.getRightDependencyId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 4)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.Splice.Deletion.prototype.setRightDependencyId = function(value) {
+
+
+proto.Operation.Splice.Deletion.prototype.setRightDependencyId = function (value) {
   jspb.Message.setWrapperField(this, 4, value);
 };
 
-
-proto.Operation.Splice.Deletion.prototype.clearRightDependencyId = function() {
+proto.Operation.Splice.Deletion.prototype.clearRightDependencyId = function () {
   this.setRightDependencyId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Deletion.prototype.hasRightDependencyId = function() {
+
+
+proto.Operation.Splice.Deletion.prototype.hasRightDependencyId = function () {
   return jspb.Message.getField(this, 4) != null;
 };
-
-
 /**
  * optional Point offset_in_right_dependency = 5;
  * @return {?proto.Operation.Point}
  */
-proto.Operation.Splice.Deletion.prototype.getOffsetInRightDependency = function() {
-  return /** @type{?proto.Operation.Point} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Point, 5));
+
+
+proto.Operation.Splice.Deletion.prototype.getOffsetInRightDependency = function () {
+  return (
+    /** @type{?proto.Operation.Point} */
+    jspb.Message.getWrapperField(this, proto.Operation.Point, 5)
+  );
 };
-
-
 /** @param {?proto.Operation.Point|undefined} value */
-proto.Operation.Splice.Deletion.prototype.setOffsetInRightDependency = function(value) {
+
+
+proto.Operation.Splice.Deletion.prototype.setOffsetInRightDependency = function (value) {
   jspb.Message.setWrapperField(this, 5, value);
 };
 
-
-proto.Operation.Splice.Deletion.prototype.clearOffsetInRightDependency = function() {
+proto.Operation.Splice.Deletion.prototype.clearOffsetInRightDependency = function () {
   this.setOffsetInRightDependency(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.Deletion.prototype.hasOffsetInRightDependency = function() {
+
+
+proto.Operation.Splice.Deletion.prototype.hasOffsetInRightDependency = function () {
   return jspb.Message.getField(this, 5) != null;
 };
-
-
 /**
  * map<uint32, uint32> max_seqs_by_site = 6;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,number>}
  */
-proto.Operation.Splice.Deletion.prototype.getMaxSeqsBySiteMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,number>} */ (
-      jspb.Message.getMapField(this, 6, opt_noLazyCreate,
-      null));
+
+
+proto.Operation.Splice.Deletion.prototype.getMaxSeqsBySiteMap = function (opt_noLazyCreate) {
+  return (
+    /** @type {!jspb.Map<number,number>} */
+    jspb.Message.getMapField(this, 6, opt_noLazyCreate, null)
+  );
 };
 
-
-proto.Operation.Splice.Deletion.prototype.clearMaxSeqsBySiteMap = function() {
+proto.Operation.Splice.Deletion.prototype.clearMaxSeqsBySiteMap = function () {
   this.getMaxSeqsBySiteMap().clear();
 };
-
-
 /**
  * optional SpliceId splice_id = 1;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.Splice.prototype.getSpliceId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 1));
+
+
+proto.Operation.Splice.prototype.getSpliceId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 1)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.Splice.prototype.setSpliceId = function(value) {
+
+
+proto.Operation.Splice.prototype.setSpliceId = function (value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
-
-proto.Operation.Splice.prototype.clearSpliceId = function() {
+proto.Operation.Splice.prototype.clearSpliceId = function () {
   this.setSpliceId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.prototype.hasSpliceId = function() {
+
+
+proto.Operation.Splice.prototype.hasSpliceId = function () {
   return jspb.Message.getField(this, 1) != null;
 };
-
-
 /**
  * optional Insertion insertion = 2;
  * @return {?proto.Operation.Splice.Insertion}
  */
-proto.Operation.Splice.prototype.getInsertion = function() {
-  return /** @type{?proto.Operation.Splice.Insertion} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Splice.Insertion, 2));
+
+
+proto.Operation.Splice.prototype.getInsertion = function () {
+  return (
+    /** @type{?proto.Operation.Splice.Insertion} */
+    jspb.Message.getWrapperField(this, proto.Operation.Splice.Insertion, 2)
+  );
 };
-
-
 /** @param {?proto.Operation.Splice.Insertion|undefined} value */
-proto.Operation.Splice.prototype.setInsertion = function(value) {
+
+
+proto.Operation.Splice.prototype.setInsertion = function (value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
-
-proto.Operation.Splice.prototype.clearInsertion = function() {
+proto.Operation.Splice.prototype.clearInsertion = function () {
   this.setInsertion(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.prototype.hasInsertion = function() {
+
+
+proto.Operation.Splice.prototype.hasInsertion = function () {
   return jspb.Message.getField(this, 2) != null;
 };
-
-
 /**
  * optional Deletion deletion = 3;
  * @return {?proto.Operation.Splice.Deletion}
  */
-proto.Operation.Splice.prototype.getDeletion = function() {
-  return /** @type{?proto.Operation.Splice.Deletion} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Splice.Deletion, 3));
+
+
+proto.Operation.Splice.prototype.getDeletion = function () {
+  return (
+    /** @type{?proto.Operation.Splice.Deletion} */
+    jspb.Message.getWrapperField(this, proto.Operation.Splice.Deletion, 3)
+  );
 };
-
-
 /** @param {?proto.Operation.Splice.Deletion|undefined} value */
-proto.Operation.Splice.prototype.setDeletion = function(value) {
+
+
+proto.Operation.Splice.prototype.setDeletion = function (value) {
   jspb.Message.setWrapperField(this, 3, value);
 };
 
-
-proto.Operation.Splice.prototype.clearDeletion = function() {
+proto.Operation.Splice.prototype.clearDeletion = function () {
   this.setDeletion(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Splice.prototype.hasDeletion = function() {
+
+
+proto.Operation.Splice.prototype.hasDeletion = function () {
   return jspb.Message.getField(this, 3) != null;
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -4571,66 +5062,69 @@ proto.Operation.Splice.prototype.hasDeletion = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.Undo = function(opt_data) {
+
+
+proto.Operation.Undo = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.Undo, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.Undo.displayName = 'proto.Operation.Undo';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.Undo.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.Undo.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.Undo} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.Undo.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    spliceId: (f = msg.getSpliceId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    undoCount: jspb.Message.getFieldWithDefault(msg, 2, 0)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.Undo.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.Undo.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.Undo} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.Undo.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      spliceId: (f = msg.getSpliceId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      undoCount: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.Undo}
  */
-proto.Operation.Undo.deserializeBinary = function(bytes) {
+
+
+proto.Operation.Undo.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.Undo;
+  var msg = new proto.Operation.Undo();
   return proto.Operation.Undo.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -4638,42 +5132,49 @@ proto.Operation.Undo.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.Undo}
  */
-proto.Operation.Undo.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.Undo.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setSpliceId(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setUndoCount(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setSpliceId(value);
+        break;
+
+      case 2:
+        var value =
+        /** @type {number} */
+        reader.readUint32();
+        msg.setUndoCount(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.Undo.prototype.serializeBinary = function() {
+
+
+proto.Operation.Undo.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.Undo.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -4681,72 +5182,71 @@ proto.Operation.Undo.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.Undo.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.Undo.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getSpliceId();
+
   if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(1, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getUndoCount();
+
   if (f !== 0) {
-    writer.writeUint32(
-      2,
-      f
-    );
+    writer.writeUint32(2, f);
   }
 };
-
-
 /**
  * optional SpliceId splice_id = 1;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.Undo.prototype.getSpliceId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 1));
+
+
+proto.Operation.Undo.prototype.getSpliceId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 1)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.Undo.prototype.setSpliceId = function(value) {
+
+
+proto.Operation.Undo.prototype.setSpliceId = function (value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
-
-proto.Operation.Undo.prototype.clearSpliceId = function() {
+proto.Operation.Undo.prototype.clearSpliceId = function () {
   this.setSpliceId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.Undo.prototype.hasSpliceId = function() {
+
+
+proto.Operation.Undo.prototype.hasSpliceId = function () {
   return jspb.Message.getField(this, 1) != null;
 };
-
-
 /**
  * optional uint32 undo_count = 2;
  * @return {number}
  */
-proto.Operation.Undo.prototype.getUndoCount = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+
+
+proto.Operation.Undo.prototype.getUndoCount = function () {
+  return (
+    /** @type {number} */
+    jspb.Message.getFieldWithDefault(this, 2, 0)
+  );
 };
-
-
 /** @param {number} value */
-proto.Operation.Undo.prototype.setUndoCount = function(value) {
+
+
+proto.Operation.Undo.prototype.setUndoCount = function (value) {
   jspb.Message.setField(this, 2, value);
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -4757,66 +5257,69 @@ proto.Operation.Undo.prototype.setUndoCount = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.MarkersUpdate = function(opt_data) {
+
+
+proto.Operation.MarkersUpdate = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.MarkersUpdate, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.MarkersUpdate.displayName = 'proto.Operation.MarkersUpdate';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.MarkersUpdate.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.MarkersUpdate.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.MarkersUpdate} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.MarkersUpdate.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    siteId: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    layerOperationsMap: (f = msg.getLayerOperationsMap()) ? f.toObject(includeInstance, proto.Operation.MarkersUpdate.LayerOperation.toObject) : []
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.MarkersUpdate.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.MarkersUpdate.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.MarkersUpdate} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.MarkersUpdate.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      siteId: jspb.Message.getFieldWithDefault(msg, 1, 0),
+      layerOperationsMap: (f = msg.getLayerOperationsMap()) ? f.toObject(includeInstance, proto.Operation.MarkersUpdate.LayerOperation.toObject) : []
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.MarkersUpdate}
  */
-proto.Operation.MarkersUpdate.deserializeBinary = function(bytes) {
+
+
+proto.Operation.MarkersUpdate.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.MarkersUpdate;
+  var msg = new proto.Operation.MarkersUpdate();
   return proto.Operation.MarkersUpdate.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -4824,43 +5327,50 @@ proto.Operation.MarkersUpdate.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.MarkersUpdate}
  */
-proto.Operation.MarkersUpdate.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.MarkersUpdate.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setSiteId(value);
-      break;
-    case 2:
-      var value = msg.getLayerOperationsMap();
-      reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Operation.MarkersUpdate.LayerOperation.deserializeBinaryFromReader);
-         });
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value =
+        /** @type {number} */
+        reader.readUint32();
+        msg.setSiteId(value);
+        break;
+
+      case 2:
+        var value = msg.getLayerOperationsMap();
+        reader.readMessage(value, function (message, reader) {
+          jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Operation.MarkersUpdate.LayerOperation.deserializeBinaryFromReader);
+        });
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.MarkersUpdate.prototype.serializeBinary = function() {
+
+
+proto.Operation.MarkersUpdate.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.MarkersUpdate.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -4868,23 +5378,22 @@ proto.Operation.MarkersUpdate.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.MarkersUpdate.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.MarkersUpdate.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getSiteId();
+
   if (f !== 0) {
-    writer.writeUint32(
-      1,
-      f
-    );
+    writer.writeUint32(1, f);
   }
+
   f = message.getLayerOperationsMap(true);
+
   if (f && f.getLength() > 0) {
     f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Operation.MarkersUpdate.LayerOperation.serializeBinaryToWriter);
   }
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -4895,66 +5404,69 @@ proto.Operation.MarkersUpdate.serializeBinaryToWriter = function(message, writer
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.MarkersUpdate.LayerOperation = function(opt_data) {
+
+
+proto.Operation.MarkersUpdate.LayerOperation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.MarkersUpdate.LayerOperation, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.MarkersUpdate.LayerOperation.displayName = 'proto.Operation.MarkersUpdate.LayerOperation';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.MarkersUpdate.LayerOperation.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.MarkersUpdate.LayerOperation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.MarkersUpdate.LayerOperation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.MarkersUpdate.LayerOperation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    isDeletion: jspb.Message.getFieldWithDefault(msg, 1, false),
-    markerOperationsMap: (f = msg.getMarkerOperationsMap()) ? f.toObject(includeInstance, proto.Operation.MarkersUpdate.MarkerOperation.toObject) : []
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.MarkersUpdate.LayerOperation.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.MarkersUpdate.LayerOperation.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.MarkersUpdate.LayerOperation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.MarkersUpdate.LayerOperation.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      isDeletion: jspb.Message.getFieldWithDefault(msg, 1, false),
+      markerOperationsMap: (f = msg.getMarkerOperationsMap()) ? f.toObject(includeInstance, proto.Operation.MarkersUpdate.MarkerOperation.toObject) : []
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.MarkersUpdate.LayerOperation}
  */
-proto.Operation.MarkersUpdate.LayerOperation.deserializeBinary = function(bytes) {
+
+
+proto.Operation.MarkersUpdate.LayerOperation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.MarkersUpdate.LayerOperation;
+  var msg = new proto.Operation.MarkersUpdate.LayerOperation();
   return proto.Operation.MarkersUpdate.LayerOperation.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -4962,43 +5474,50 @@ proto.Operation.MarkersUpdate.LayerOperation.deserializeBinary = function(bytes)
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.MarkersUpdate.LayerOperation}
  */
-proto.Operation.MarkersUpdate.LayerOperation.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.MarkersUpdate.LayerOperation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsDeletion(value);
-      break;
-    case 2:
-      var value = msg.getMarkerOperationsMap();
-      reader.readMessage(value, function(message, reader) {
-        jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinaryFromReader);
-         });
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value =
+        /** @type {boolean} */
+        reader.readBool();
+        msg.setIsDeletion(value);
+        break;
+
+      case 2:
+        var value = msg.getMarkerOperationsMap();
+        reader.readMessage(value, function (message, reader) {
+          jspb.Map.deserializeBinary(message, reader, jspb.BinaryReader.prototype.readUint32, jspb.BinaryReader.prototype.readMessage, proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinaryFromReader);
+        });
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.MarkersUpdate.LayerOperation.prototype.serializeBinary = function() {
+
+
+proto.Operation.MarkersUpdate.LayerOperation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.MarkersUpdate.LayerOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -5006,58 +5525,60 @@ proto.Operation.MarkersUpdate.LayerOperation.prototype.serializeBinary = functio
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.MarkersUpdate.LayerOperation.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.MarkersUpdate.LayerOperation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getIsDeletion();
+
   if (f) {
-    writer.writeBool(
-      1,
-      f
-    );
+    writer.writeBool(1, f);
   }
+
   f = message.getMarkerOperationsMap(true);
+
   if (f && f.getLength() > 0) {
     f.serializeBinary(2, writer, jspb.BinaryWriter.prototype.writeUint32, jspb.BinaryWriter.prototype.writeMessage, proto.Operation.MarkersUpdate.MarkerOperation.serializeBinaryToWriter);
   }
 };
-
-
 /**
  * optional bool is_deletion = 1;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.Operation.MarkersUpdate.LayerOperation.prototype.getIsDeletion = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 1, false));
+
+
+proto.Operation.MarkersUpdate.LayerOperation.prototype.getIsDeletion = function () {
+  return (
+    /** @type {boolean} */
+    jspb.Message.getFieldWithDefault(this, 1, false)
+  );
 };
-
-
 /** @param {boolean} value */
-proto.Operation.MarkersUpdate.LayerOperation.prototype.setIsDeletion = function(value) {
+
+
+proto.Operation.MarkersUpdate.LayerOperation.prototype.setIsDeletion = function (value) {
   jspb.Message.setField(this, 1, value);
 };
-
-
 /**
  * map<uint32, MarkerOperation> marker_operations = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Operation.MarkersUpdate.MarkerOperation>}
  */
-proto.Operation.MarkersUpdate.LayerOperation.prototype.getMarkerOperationsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Operation.MarkersUpdate.MarkerOperation>} */ (
-      jspb.Message.getMapField(this, 2, opt_noLazyCreate,
-      proto.Operation.MarkersUpdate.MarkerOperation));
+
+
+proto.Operation.MarkersUpdate.LayerOperation.prototype.getMarkerOperationsMap = function (opt_noLazyCreate) {
+  return (
+    /** @type {!jspb.Map<number,!proto.Operation.MarkersUpdate.MarkerOperation>} */
+    jspb.Message.getMapField(this, 2, opt_noLazyCreate, proto.Operation.MarkersUpdate.MarkerOperation)
+  );
 };
 
-
-proto.Operation.MarkersUpdate.LayerOperation.prototype.clearMarkerOperationsMap = function() {
+proto.Operation.MarkersUpdate.LayerOperation.prototype.clearMarkerOperationsMap = function () {
   this.getMarkerOperationsMap().clear();
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -5068,66 +5589,69 @@ proto.Operation.MarkersUpdate.LayerOperation.prototype.clearMarkerOperationsMap 
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.MarkersUpdate.MarkerOperation = function(opt_data) {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.MarkersUpdate.MarkerOperation, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.MarkersUpdate.MarkerOperation.displayName = 'proto.Operation.MarkersUpdate.MarkerOperation';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.MarkersUpdate.MarkerOperation.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.MarkersUpdate.MarkerOperation} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.MarkersUpdate.MarkerOperation.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    isDeletion: jspb.Message.getFieldWithDefault(msg, 1, false),
-    markerUpdate: (f = msg.getMarkerUpdate()) && proto.Operation.MarkersUpdate.MarkerUpdate.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.MarkersUpdate.MarkerOperation.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.MarkersUpdate.MarkerOperation.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.MarkersUpdate.MarkerOperation} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.MarkersUpdate.MarkerOperation.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      isDeletion: jspb.Message.getFieldWithDefault(msg, 1, false),
+      markerUpdate: (f = msg.getMarkerUpdate()) && proto.Operation.MarkersUpdate.MarkerUpdate.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.MarkersUpdate.MarkerOperation}
  */
-proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinary = function(bytes) {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.MarkersUpdate.MarkerOperation;
+  var msg = new proto.Operation.MarkersUpdate.MarkerOperation();
   return proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -5135,42 +5659,49 @@ proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinary = function(bytes
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.MarkersUpdate.MarkerOperation}
  */
-proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setIsDeletion(value);
-      break;
-    case 2:
-      var value = new proto.Operation.MarkersUpdate.MarkerUpdate;
-      reader.readMessage(value,proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinaryFromReader);
-      msg.setMarkerUpdate(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value =
+        /** @type {boolean} */
+        reader.readBool();
+        msg.setIsDeletion(value);
+        break;
+
+      case 2:
+        var value = new proto.Operation.MarkersUpdate.MarkerUpdate();
+        reader.readMessage(value, proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinaryFromReader);
+        msg.setMarkerUpdate(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.serializeBinary = function() {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.MarkersUpdate.MarkerOperation.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -5178,74 +5709,73 @@ proto.Operation.MarkersUpdate.MarkerOperation.prototype.serializeBinary = functi
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.MarkersUpdate.MarkerOperation.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getIsDeletion();
+
   if (f) {
-    writer.writeBool(
-      1,
-      f
-    );
+    writer.writeBool(1, f);
   }
+
   f = message.getMarkerUpdate();
+
   if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.Operation.MarkersUpdate.MarkerUpdate.serializeBinaryToWriter
-    );
+    writer.writeMessage(2, f, proto.Operation.MarkersUpdate.MarkerUpdate.serializeBinaryToWriter);
   }
 };
-
-
 /**
  * optional bool is_deletion = 1;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.getIsDeletion = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 1, false));
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.prototype.getIsDeletion = function () {
+  return (
+    /** @type {boolean} */
+    jspb.Message.getFieldWithDefault(this, 1, false)
+  );
 };
-
-
 /** @param {boolean} value */
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.setIsDeletion = function(value) {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.prototype.setIsDeletion = function (value) {
   jspb.Message.setField(this, 1, value);
 };
-
-
 /**
  * optional MarkerUpdate marker_update = 2;
  * @return {?proto.Operation.MarkersUpdate.MarkerUpdate}
  */
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.getMarkerUpdate = function() {
-  return /** @type{?proto.Operation.MarkersUpdate.MarkerUpdate} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.MarkersUpdate.MarkerUpdate, 2));
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.prototype.getMarkerUpdate = function () {
+  return (
+    /** @type{?proto.Operation.MarkersUpdate.MarkerUpdate} */
+    jspb.Message.getWrapperField(this, proto.Operation.MarkersUpdate.MarkerUpdate, 2)
+  );
 };
-
-
 /** @param {?proto.Operation.MarkersUpdate.MarkerUpdate|undefined} value */
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.setMarkerUpdate = function(value) {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.prototype.setMarkerUpdate = function (value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
-
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.clearMarkerUpdate = function() {
+proto.Operation.MarkersUpdate.MarkerOperation.prototype.clearMarkerUpdate = function () {
   this.setMarkerUpdate(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.MarkersUpdate.MarkerOperation.prototype.hasMarkerUpdate = function() {
+
+
+proto.Operation.MarkersUpdate.MarkerOperation.prototype.hasMarkerUpdate = function () {
   return jspb.Message.getField(this, 2) != null;
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -5256,68 +5786,71 @@ proto.Operation.MarkersUpdate.MarkerOperation.prototype.hasMarkerUpdate = functi
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.MarkersUpdate.MarkerUpdate = function(opt_data) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.MarkersUpdate.MarkerUpdate, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.MarkersUpdate.MarkerUpdate.displayName = 'proto.Operation.MarkersUpdate.MarkerUpdate';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.MarkersUpdate.MarkerUpdate.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.MarkersUpdate.MarkerUpdate} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.MarkersUpdate.MarkerUpdate.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    range: (f = msg.getRange()) && proto.Operation.MarkersUpdate.LogicalRange.toObject(includeInstance, f),
-    exclusive: jspb.Message.getFieldWithDefault(msg, 2, false),
-    reversed: jspb.Message.getFieldWithDefault(msg, 3, false),
-    tailed: jspb.Message.getFieldWithDefault(msg, 4, false)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.MarkersUpdate.MarkerUpdate.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.MarkersUpdate.MarkerUpdate.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.MarkersUpdate.MarkerUpdate} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.MarkersUpdate.MarkerUpdate.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      range: (f = msg.getRange()) && proto.Operation.MarkersUpdate.LogicalRange.toObject(includeInstance, f),
+      exclusive: jspb.Message.getFieldWithDefault(msg, 2, false),
+      reversed: jspb.Message.getFieldWithDefault(msg, 3, false),
+      tailed: jspb.Message.getFieldWithDefault(msg, 4, false)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.MarkersUpdate.MarkerUpdate}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinary = function(bytes) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.MarkersUpdate.MarkerUpdate;
+  var msg = new proto.Operation.MarkersUpdate.MarkerUpdate();
   return proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -5325,50 +5858,63 @@ proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.MarkersUpdate.MarkerUpdate}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = new proto.Operation.MarkersUpdate.LogicalRange;
-      reader.readMessage(value,proto.Operation.MarkersUpdate.LogicalRange.deserializeBinaryFromReader);
-      msg.setRange(value);
-      break;
-    case 2:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setExclusive(value);
-      break;
-    case 3:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setReversed(value);
-      break;
-    case 4:
-      var value = /** @type {boolean} */ (reader.readBool());
-      msg.setTailed(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.Operation.MarkersUpdate.LogicalRange();
+        reader.readMessage(value, proto.Operation.MarkersUpdate.LogicalRange.deserializeBinaryFromReader);
+        msg.setRange(value);
+        break;
+
+      case 2:
+        var value =
+        /** @type {boolean} */
+        reader.readBool();
+        msg.setExclusive(value);
+        break;
+
+      case 3:
+        var value =
+        /** @type {boolean} */
+        reader.readBool();
+        msg.setReversed(value);
+        break;
+
+      case 4:
+        var value =
+        /** @type {boolean} */
+        reader.readBool();
+        msg.setTailed(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.serializeBinary = function() {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.MarkersUpdate.MarkerUpdate.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -5376,122 +5922,125 @@ proto.Operation.MarkersUpdate.MarkerUpdate.prototype.serializeBinary = function(
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getRange();
+
   if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.Operation.MarkersUpdate.LogicalRange.serializeBinaryToWriter
-    );
+    writer.writeMessage(1, f, proto.Operation.MarkersUpdate.LogicalRange.serializeBinaryToWriter);
   }
+
   f = message.getExclusive();
+
   if (f) {
-    writer.writeBool(
-      2,
-      f
-    );
+    writer.writeBool(2, f);
   }
+
   f = message.getReversed();
+
   if (f) {
-    writer.writeBool(
-      3,
-      f
-    );
+    writer.writeBool(3, f);
   }
+
   f = message.getTailed();
+
   if (f) {
-    writer.writeBool(
-      4,
-      f
-    );
+    writer.writeBool(4, f);
   }
 };
-
-
 /**
  * optional LogicalRange range = 1;
  * @return {?proto.Operation.MarkersUpdate.LogicalRange}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getRange = function() {
-  return /** @type{?proto.Operation.MarkersUpdate.LogicalRange} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.MarkersUpdate.LogicalRange, 1));
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getRange = function () {
+  return (
+    /** @type{?proto.Operation.MarkersUpdate.LogicalRange} */
+    jspb.Message.getWrapperField(this, proto.Operation.MarkersUpdate.LogicalRange, 1)
+  );
 };
-
-
 /** @param {?proto.Operation.MarkersUpdate.LogicalRange|undefined} value */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setRange = function(value) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setRange = function (value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
-
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.clearRange = function() {
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.clearRange = function () {
   this.setRange(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.hasRange = function() {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.hasRange = function () {
   return jspb.Message.getField(this, 1) != null;
 };
-
-
 /**
  * optional bool exclusive = 2;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getExclusive = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 2, false));
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getExclusive = function () {
+  return (
+    /** @type {boolean} */
+    jspb.Message.getFieldWithDefault(this, 2, false)
+  );
 };
-
-
 /** @param {boolean} value */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setExclusive = function(value) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setExclusive = function (value) {
   jspb.Message.setField(this, 2, value);
 };
-
-
 /**
  * optional bool reversed = 3;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getReversed = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 3, false));
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getReversed = function () {
+  return (
+    /** @type {boolean} */
+    jspb.Message.getFieldWithDefault(this, 3, false)
+  );
 };
-
-
 /** @param {boolean} value */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setReversed = function(value) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setReversed = function (value) {
   jspb.Message.setField(this, 3, value);
 };
-
-
 /**
  * optional bool tailed = 4;
  * Note that Boolean fields may be set to 0/1 when serialized from a Java server.
  * You should avoid comparisons like {@code val === true/false} in those cases.
  * @return {boolean}
  */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getTailed = function() {
-  return /** @type {boolean} */ (jspb.Message.getFieldWithDefault(this, 4, false));
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.getTailed = function () {
+  return (
+    /** @type {boolean} */
+    jspb.Message.getFieldWithDefault(this, 4, false)
+  );
 };
-
-
 /** @param {boolean} value */
-proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setTailed = function(value) {
+
+
+proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setTailed = function (value) {
   jspb.Message.setField(this, 4, value);
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -5502,68 +6051,71 @@ proto.Operation.MarkersUpdate.MarkerUpdate.prototype.setTailed = function(value)
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.MarkersUpdate.LogicalRange = function(opt_data) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.MarkersUpdate.LogicalRange, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.MarkersUpdate.LogicalRange.displayName = 'proto.Operation.MarkersUpdate.LogicalRange';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.MarkersUpdate.LogicalRange.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.MarkersUpdate.LogicalRange} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.MarkersUpdate.LogicalRange.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    startDependencyId: (f = msg.getStartDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    offsetInStartDependency: (f = msg.getOffsetInStartDependency()) && proto.Operation.Point.toObject(includeInstance, f),
-    endDependencyId: (f = msg.getEndDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
-    offsetInEndDependency: (f = msg.getOffsetInEndDependency()) && proto.Operation.Point.toObject(includeInstance, f)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.MarkersUpdate.LogicalRange.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.MarkersUpdate.LogicalRange.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.MarkersUpdate.LogicalRange} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.MarkersUpdate.LogicalRange.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      startDependencyId: (f = msg.getStartDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      offsetInStartDependency: (f = msg.getOffsetInStartDependency()) && proto.Operation.Point.toObject(includeInstance, f),
+      endDependencyId: (f = msg.getEndDependencyId()) && proto.Operation.SpliceId.toObject(includeInstance, f),
+      offsetInEndDependency: (f = msg.getOffsetInEndDependency()) && proto.Operation.Point.toObject(includeInstance, f)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.MarkersUpdate.LogicalRange}
  */
-proto.Operation.MarkersUpdate.LogicalRange.deserializeBinary = function(bytes) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.MarkersUpdate.LogicalRange;
+  var msg = new proto.Operation.MarkersUpdate.LogicalRange();
   return proto.Operation.MarkersUpdate.LogicalRange.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -5571,53 +6123,60 @@ proto.Operation.MarkersUpdate.LogicalRange.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.MarkersUpdate.LogicalRange}
  */
-proto.Operation.MarkersUpdate.LogicalRange.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setStartDependencyId(value);
-      break;
-    case 2:
-      var value = new proto.Operation.Point;
-      reader.readMessage(value,proto.Operation.Point.deserializeBinaryFromReader);
-      msg.setOffsetInStartDependency(value);
-      break;
-    case 3:
-      var value = new proto.Operation.SpliceId;
-      reader.readMessage(value,proto.Operation.SpliceId.deserializeBinaryFromReader);
-      msg.setEndDependencyId(value);
-      break;
-    case 4:
-      var value = new proto.Operation.Point;
-      reader.readMessage(value,proto.Operation.Point.deserializeBinaryFromReader);
-      msg.setOffsetInEndDependency(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setStartDependencyId(value);
+        break;
+
+      case 2:
+        var value = new proto.Operation.Point();
+        reader.readMessage(value, proto.Operation.Point.deserializeBinaryFromReader);
+        msg.setOffsetInStartDependency(value);
+        break;
+
+      case 3:
+        var value = new proto.Operation.SpliceId();
+        reader.readMessage(value, proto.Operation.SpliceId.deserializeBinaryFromReader);
+        msg.setEndDependencyId(value);
+        break;
+
+      case 4:
+        var value = new proto.Operation.Point();
+        reader.readMessage(value, proto.Operation.Point.deserializeBinaryFromReader);
+        msg.setOffsetInEndDependency(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.serializeBinary = function() {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.MarkersUpdate.LogicalRange.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -5625,197 +6184,194 @@ proto.Operation.MarkersUpdate.LogicalRange.prototype.serializeBinary = function(
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.MarkersUpdate.LogicalRange.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getStartDependencyId();
+
   if (f != null) {
-    writer.writeMessage(
-      1,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(1, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getOffsetInStartDependency();
+
   if (f != null) {
-    writer.writeMessage(
-      2,
-      f,
-      proto.Operation.Point.serializeBinaryToWriter
-    );
+    writer.writeMessage(2, f, proto.Operation.Point.serializeBinaryToWriter);
   }
+
   f = message.getEndDependencyId();
+
   if (f != null) {
-    writer.writeMessage(
-      3,
-      f,
-      proto.Operation.SpliceId.serializeBinaryToWriter
-    );
+    writer.writeMessage(3, f, proto.Operation.SpliceId.serializeBinaryToWriter);
   }
+
   f = message.getOffsetInEndDependency();
+
   if (f != null) {
-    writer.writeMessage(
-      4,
-      f,
-      proto.Operation.Point.serializeBinaryToWriter
-    );
+    writer.writeMessage(4, f, proto.Operation.Point.serializeBinaryToWriter);
   }
 };
-
-
 /**
  * optional SpliceId start_dependency_id = 1;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.getStartDependencyId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 1));
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.getStartDependencyId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 1)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.setStartDependencyId = function(value) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.setStartDependencyId = function (value) {
   jspb.Message.setWrapperField(this, 1, value);
 };
 
-
-proto.Operation.MarkersUpdate.LogicalRange.prototype.clearStartDependencyId = function() {
+proto.Operation.MarkersUpdate.LogicalRange.prototype.clearStartDependencyId = function () {
   this.setStartDependencyId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.hasStartDependencyId = function() {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.hasStartDependencyId = function () {
   return jspb.Message.getField(this, 1) != null;
 };
-
-
 /**
  * optional Point offset_in_start_dependency = 2;
  * @return {?proto.Operation.Point}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.getOffsetInStartDependency = function() {
-  return /** @type{?proto.Operation.Point} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Point, 2));
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.getOffsetInStartDependency = function () {
+  return (
+    /** @type{?proto.Operation.Point} */
+    jspb.Message.getWrapperField(this, proto.Operation.Point, 2)
+  );
 };
-
-
 /** @param {?proto.Operation.Point|undefined} value */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.setOffsetInStartDependency = function(value) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.setOffsetInStartDependency = function (value) {
   jspb.Message.setWrapperField(this, 2, value);
 };
 
-
-proto.Operation.MarkersUpdate.LogicalRange.prototype.clearOffsetInStartDependency = function() {
+proto.Operation.MarkersUpdate.LogicalRange.prototype.clearOffsetInStartDependency = function () {
   this.setOffsetInStartDependency(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.hasOffsetInStartDependency = function() {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.hasOffsetInStartDependency = function () {
   return jspb.Message.getField(this, 2) != null;
 };
-
-
 /**
  * optional SpliceId end_dependency_id = 3;
  * @return {?proto.Operation.SpliceId}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.getEndDependencyId = function() {
-  return /** @type{?proto.Operation.SpliceId} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 3));
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.getEndDependencyId = function () {
+  return (
+    /** @type{?proto.Operation.SpliceId} */
+    jspb.Message.getWrapperField(this, proto.Operation.SpliceId, 3)
+  );
 };
-
-
 /** @param {?proto.Operation.SpliceId|undefined} value */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.setEndDependencyId = function(value) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.setEndDependencyId = function (value) {
   jspb.Message.setWrapperField(this, 3, value);
 };
 
-
-proto.Operation.MarkersUpdate.LogicalRange.prototype.clearEndDependencyId = function() {
+proto.Operation.MarkersUpdate.LogicalRange.prototype.clearEndDependencyId = function () {
   this.setEndDependencyId(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.hasEndDependencyId = function() {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.hasEndDependencyId = function () {
   return jspb.Message.getField(this, 3) != null;
 };
-
-
 /**
  * optional Point offset_in_end_dependency = 4;
  * @return {?proto.Operation.Point}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.getOffsetInEndDependency = function() {
-  return /** @type{?proto.Operation.Point} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Point, 4));
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.getOffsetInEndDependency = function () {
+  return (
+    /** @type{?proto.Operation.Point} */
+    jspb.Message.getWrapperField(this, proto.Operation.Point, 4)
+  );
 };
-
-
 /** @param {?proto.Operation.Point|undefined} value */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.setOffsetInEndDependency = function(value) {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.setOffsetInEndDependency = function (value) {
   jspb.Message.setWrapperField(this, 4, value);
 };
 
-
-proto.Operation.MarkersUpdate.LogicalRange.prototype.clearOffsetInEndDependency = function() {
+proto.Operation.MarkersUpdate.LogicalRange.prototype.clearOffsetInEndDependency = function () {
   this.setOffsetInEndDependency(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.MarkersUpdate.LogicalRange.prototype.hasOffsetInEndDependency = function() {
+
+
+proto.Operation.MarkersUpdate.LogicalRange.prototype.hasOffsetInEndDependency = function () {
   return jspb.Message.getField(this, 4) != null;
 };
-
-
 /**
  * optional uint32 site_id = 1;
  * @return {number}
  */
-proto.Operation.MarkersUpdate.prototype.getSiteId = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+
+
+proto.Operation.MarkersUpdate.prototype.getSiteId = function () {
+  return (
+    /** @type {number} */
+    jspb.Message.getFieldWithDefault(this, 1, 0)
+  );
 };
-
-
 /** @param {number} value */
-proto.Operation.MarkersUpdate.prototype.setSiteId = function(value) {
+
+
+proto.Operation.MarkersUpdate.prototype.setSiteId = function (value) {
   jspb.Message.setField(this, 1, value);
 };
-
-
 /**
  * map<uint32, LayerOperation> layer_operations = 2;
  * @param {boolean=} opt_noLazyCreate Do not create the map if
  * empty, instead returning `undefined`
  * @return {!jspb.Map<number,!proto.Operation.MarkersUpdate.LayerOperation>}
  */
-proto.Operation.MarkersUpdate.prototype.getLayerOperationsMap = function(opt_noLazyCreate) {
-  return /** @type {!jspb.Map<number,!proto.Operation.MarkersUpdate.LayerOperation>} */ (
-      jspb.Message.getMapField(this, 2, opt_noLazyCreate,
-      proto.Operation.MarkersUpdate.LayerOperation));
+
+
+proto.Operation.MarkersUpdate.prototype.getLayerOperationsMap = function (opt_noLazyCreate) {
+  return (
+    /** @type {!jspb.Map<number,!proto.Operation.MarkersUpdate.LayerOperation>} */
+    jspb.Message.getMapField(this, 2, opt_noLazyCreate, proto.Operation.MarkersUpdate.LayerOperation)
+  );
 };
 
-
-proto.Operation.MarkersUpdate.prototype.clearLayerOperationsMap = function() {
+proto.Operation.MarkersUpdate.prototype.clearLayerOperationsMap = function () {
   this.getLayerOperationsMap().clear();
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -5826,66 +6382,69 @@ proto.Operation.MarkersUpdate.prototype.clearLayerOperationsMap = function() {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.SpliceId = function(opt_data) {
+
+
+proto.Operation.SpliceId = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.SpliceId, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.SpliceId.displayName = 'proto.Operation.SpliceId';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.SpliceId.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.SpliceId.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.SpliceId} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.SpliceId.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    site: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    seq: jspb.Message.getFieldWithDefault(msg, 2, 0)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.SpliceId.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.SpliceId.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.SpliceId} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.SpliceId.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      site: jspb.Message.getFieldWithDefault(msg, 1, 0),
+      seq: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.SpliceId}
  */
-proto.Operation.SpliceId.deserializeBinary = function(bytes) {
+
+
+proto.Operation.SpliceId.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.SpliceId;
+  var msg = new proto.Operation.SpliceId();
   return proto.Operation.SpliceId.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -5893,41 +6452,50 @@ proto.Operation.SpliceId.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.SpliceId}
  */
-proto.Operation.SpliceId.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.SpliceId.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setSite(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setSeq(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value =
+        /** @type {number} */
+        reader.readUint32();
+        msg.setSite(value);
+        break;
+
+      case 2:
+        var value =
+        /** @type {number} */
+        reader.readUint32();
+        msg.setSeq(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.SpliceId.prototype.serializeBinary = function() {
+
+
+proto.Operation.SpliceId.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.SpliceId.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -5935,56 +6503,58 @@ proto.Operation.SpliceId.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.SpliceId.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.SpliceId.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getSite();
+
   if (f !== 0) {
-    writer.writeUint32(
-      1,
-      f
-    );
+    writer.writeUint32(1, f);
   }
+
   f = message.getSeq();
+
   if (f !== 0) {
-    writer.writeUint32(
-      2,
-      f
-    );
+    writer.writeUint32(2, f);
   }
 };
-
-
 /**
  * optional uint32 site = 1;
  * @return {number}
  */
-proto.Operation.SpliceId.prototype.getSite = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+
+
+proto.Operation.SpliceId.prototype.getSite = function () {
+  return (
+    /** @type {number} */
+    jspb.Message.getFieldWithDefault(this, 1, 0)
+  );
 };
-
-
 /** @param {number} value */
-proto.Operation.SpliceId.prototype.setSite = function(value) {
+
+
+proto.Operation.SpliceId.prototype.setSite = function (value) {
   jspb.Message.setField(this, 1, value);
 };
-
-
 /**
  * optional uint32 seq = 2;
  * @return {number}
  */
-proto.Operation.SpliceId.prototype.getSeq = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+
+
+proto.Operation.SpliceId.prototype.getSeq = function () {
+  return (
+    /** @type {number} */
+    jspb.Message.getFieldWithDefault(this, 2, 0)
+  );
 };
-
-
 /** @param {number} value */
-proto.Operation.SpliceId.prototype.setSeq = function(value) {
+
+
+proto.Operation.SpliceId.prototype.setSeq = function (value) {
   jspb.Message.setField(this, 2, value);
 };
-
-
-
 /**
  * Generated by JsPbCodeGenerator.
  * @param {Array=} opt_data Optional initial data array, typically from a
@@ -5995,66 +6565,69 @@ proto.Operation.SpliceId.prototype.setSeq = function(value) {
  * @extends {jspb.Message}
  * @constructor
  */
-proto.Operation.Point = function(opt_data) {
+
+
+proto.Operation.Point = function (opt_data) {
   jspb.Message.initialize(this, opt_data, 0, -1, null, null);
 };
+
 goog.inherits(proto.Operation.Point, jspb.Message);
+
 if (goog.DEBUG && !COMPILED) {
   proto.Operation.Point.displayName = 'proto.Operation.Point';
 }
 
-
 if (jspb.Message.GENERATE_TO_OBJECT) {
-/**
- * Creates an object representation of this proto suitable for use in Soy templates.
- * Field names that are reserved in JavaScript and will be renamed to pb_name.
- * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
- * For the list of reserved names please see:
- *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
- * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
- *     for transitional soy proto support: http://goto/soy-param-migration
- * @return {!Object}
- */
-proto.Operation.Point.prototype.toObject = function(opt_includeInstance) {
-  return proto.Operation.Point.toObject(opt_includeInstance, this);
-};
-
-
-/**
- * Static version of the {@see toObject} method.
- * @param {boolean|undefined} includeInstance Whether to include the JSPB
- *     instance for transitional soy proto support:
- *     http://goto/soy-param-migration
- * @param {!proto.Operation.Point} msg The msg instance to transform.
- * @return {!Object}
- * @suppress {unusedLocalVariables} f is only used for nested messages
- */
-proto.Operation.Point.toObject = function(includeInstance, msg) {
-  var f, obj = {
-    row: jspb.Message.getFieldWithDefault(msg, 1, 0),
-    column: jspb.Message.getFieldWithDefault(msg, 2, 0)
+  /**
+   * Creates an object representation of this proto suitable for use in Soy templates.
+   * Field names that are reserved in JavaScript and will be renamed to pb_name.
+   * To access a reserved field use, foo.pb_<name>, eg, foo.pb_default.
+   * For the list of reserved names please see:
+   *     com.google.apps.jspb.JsClassTemplate.JS_RESERVED_WORDS.
+   * @param {boolean=} opt_includeInstance Whether to include the JSPB instance
+   *     for transitional soy proto support: http://goto/soy-param-migration
+   * @return {!Object}
+   */
+  proto.Operation.Point.prototype.toObject = function (opt_includeInstance) {
+    return proto.Operation.Point.toObject(opt_includeInstance, this);
   };
+  /**
+   * Static version of the {@see toObject} method.
+   * @param {boolean|undefined} includeInstance Whether to include the JSPB
+   *     instance for transitional soy proto support:
+   *     http://goto/soy-param-migration
+   * @param {!proto.Operation.Point} msg The msg instance to transform.
+   * @return {!Object}
+   * @suppress {unusedLocalVariables} f is only used for nested messages
+   */
 
-  if (includeInstance) {
-    obj.$jspbMessageInstance = msg;
-  }
-  return obj;
-};
+
+  proto.Operation.Point.toObject = function (includeInstance, msg) {
+    var f,
+        obj = {
+      row: jspb.Message.getFieldWithDefault(msg, 1, 0),
+      column: jspb.Message.getFieldWithDefault(msg, 2, 0)
+    };
+
+    if (includeInstance) {
+      obj.$jspbMessageInstance = msg;
+    }
+
+    return obj;
+  };
 }
-
-
 /**
  * Deserializes binary data (in protobuf wire format).
  * @param {jspb.ByteSource} bytes The bytes to deserialize.
  * @return {!proto.Operation.Point}
  */
-proto.Operation.Point.deserializeBinary = function(bytes) {
+
+
+proto.Operation.Point.deserializeBinary = function (bytes) {
   var reader = new jspb.BinaryReader(bytes);
-  var msg = new proto.Operation.Point;
+  var msg = new proto.Operation.Point();
   return proto.Operation.Point.deserializeBinaryFromReader(msg, reader);
 };
-
-
 /**
  * Deserializes binary data (in protobuf wire format) from the
  * given reader into the given message object.
@@ -6062,41 +6635,50 @@ proto.Operation.Point.deserializeBinary = function(bytes) {
  * @param {!jspb.BinaryReader} reader The BinaryReader to use.
  * @return {!proto.Operation.Point}
  */
-proto.Operation.Point.deserializeBinaryFromReader = function(msg, reader) {
+
+
+proto.Operation.Point.deserializeBinaryFromReader = function (msg, reader) {
   while (reader.nextField()) {
     if (reader.isEndGroup()) {
       break;
     }
+
     var field = reader.getFieldNumber();
+
     switch (field) {
-    case 1:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setRow(value);
-      break;
-    case 2:
-      var value = /** @type {number} */ (reader.readUint32());
-      msg.setColumn(value);
-      break;
-    default:
-      reader.skipField();
-      break;
+      case 1:
+        var value =
+        /** @type {number} */
+        reader.readUint32();
+        msg.setRow(value);
+        break;
+
+      case 2:
+        var value =
+        /** @type {number} */
+        reader.readUint32();
+        msg.setColumn(value);
+        break;
+
+      default:
+        reader.skipField();
+        break;
     }
   }
+
   return msg;
 };
-
-
 /**
  * Serializes the message to binary data (in protobuf wire format).
  * @return {!Uint8Array}
  */
-proto.Operation.Point.prototype.serializeBinary = function() {
+
+
+proto.Operation.Point.prototype.serializeBinary = function () {
   var writer = new jspb.BinaryWriter();
   proto.Operation.Point.serializeBinaryToWriter(this, writer);
   return writer.getResultBuffer();
 };
-
-
 /**
  * Serializes the given message to binary data (in protobuf wire
  * format), writing to the given BinaryWriter.
@@ -6104,147 +6686,153 @@ proto.Operation.Point.prototype.serializeBinary = function() {
  * @param {!jspb.BinaryWriter} writer
  * @suppress {unusedLocalVariables} f is only used for nested messages
  */
-proto.Operation.Point.serializeBinaryToWriter = function(message, writer) {
+
+
+proto.Operation.Point.serializeBinaryToWriter = function (message, writer) {
   var f = undefined;
   f = message.getRow();
+
   if (f !== 0) {
-    writer.writeUint32(
-      1,
-      f
-    );
+    writer.writeUint32(1, f);
   }
+
   f = message.getColumn();
+
   if (f !== 0) {
-    writer.writeUint32(
-      2,
-      f
-    );
+    writer.writeUint32(2, f);
   }
 };
-
-
 /**
  * optional uint32 row = 1;
  * @return {number}
  */
-proto.Operation.Point.prototype.getRow = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 1, 0));
+
+
+proto.Operation.Point.prototype.getRow = function () {
+  return (
+    /** @type {number} */
+    jspb.Message.getFieldWithDefault(this, 1, 0)
+  );
 };
-
-
 /** @param {number} value */
-proto.Operation.Point.prototype.setRow = function(value) {
+
+
+proto.Operation.Point.prototype.setRow = function (value) {
   jspb.Message.setField(this, 1, value);
 };
-
-
 /**
  * optional uint32 column = 2;
  * @return {number}
  */
-proto.Operation.Point.prototype.getColumn = function() {
-  return /** @type {number} */ (jspb.Message.getFieldWithDefault(this, 2, 0));
+
+
+proto.Operation.Point.prototype.getColumn = function () {
+  return (
+    /** @type {number} */
+    jspb.Message.getFieldWithDefault(this, 2, 0)
+  );
 };
-
-
 /** @param {number} value */
-proto.Operation.Point.prototype.setColumn = function(value) {
+
+
+proto.Operation.Point.prototype.setColumn = function (value) {
   jspb.Message.setField(this, 2, value);
 };
-
-
 /**
  * optional Splice splice = 1;
  * @return {?proto.Operation.Splice}
  */
-proto.Operation.prototype.getSplice = function() {
-  return /** @type{?proto.Operation.Splice} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Splice, 1));
+
+
+proto.Operation.prototype.getSplice = function () {
+  return (
+    /** @type{?proto.Operation.Splice} */
+    jspb.Message.getWrapperField(this, proto.Operation.Splice, 1)
+  );
 };
-
-
 /** @param {?proto.Operation.Splice|undefined} value */
-proto.Operation.prototype.setSplice = function(value) {
+
+
+proto.Operation.prototype.setSplice = function (value) {
   jspb.Message.setOneofWrapperField(this, 1, proto.Operation.oneofGroups_[0], value);
 };
 
-
-proto.Operation.prototype.clearSplice = function() {
+proto.Operation.prototype.clearSplice = function () {
   this.setSplice(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.prototype.hasSplice = function() {
+
+
+proto.Operation.prototype.hasSplice = function () {
   return jspb.Message.getField(this, 1) != null;
 };
-
-
 /**
  * optional Undo undo = 2;
  * @return {?proto.Operation.Undo}
  */
-proto.Operation.prototype.getUndo = function() {
-  return /** @type{?proto.Operation.Undo} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.Undo, 2));
+
+
+proto.Operation.prototype.getUndo = function () {
+  return (
+    /** @type{?proto.Operation.Undo} */
+    jspb.Message.getWrapperField(this, proto.Operation.Undo, 2)
+  );
 };
-
-
 /** @param {?proto.Operation.Undo|undefined} value */
-proto.Operation.prototype.setUndo = function(value) {
+
+
+proto.Operation.prototype.setUndo = function (value) {
   jspb.Message.setOneofWrapperField(this, 2, proto.Operation.oneofGroups_[0], value);
 };
 
-
-proto.Operation.prototype.clearUndo = function() {
+proto.Operation.prototype.clearUndo = function () {
   this.setUndo(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.prototype.hasUndo = function() {
+
+
+proto.Operation.prototype.hasUndo = function () {
   return jspb.Message.getField(this, 2) != null;
 };
-
-
 /**
  * optional MarkersUpdate markers_update = 3;
  * @return {?proto.Operation.MarkersUpdate}
  */
-proto.Operation.prototype.getMarkersUpdate = function() {
-  return /** @type{?proto.Operation.MarkersUpdate} */ (
-    jspb.Message.getWrapperField(this, proto.Operation.MarkersUpdate, 3));
+
+
+proto.Operation.prototype.getMarkersUpdate = function () {
+  return (
+    /** @type{?proto.Operation.MarkersUpdate} */
+    jspb.Message.getWrapperField(this, proto.Operation.MarkersUpdate, 3)
+  );
 };
-
-
 /** @param {?proto.Operation.MarkersUpdate|undefined} value */
-proto.Operation.prototype.setMarkersUpdate = function(value) {
+
+
+proto.Operation.prototype.setMarkersUpdate = function (value) {
   jspb.Message.setOneofWrapperField(this, 3, proto.Operation.oneofGroups_[0], value);
 };
 
-
-proto.Operation.prototype.clearMarkersUpdate = function() {
+proto.Operation.prototype.clearMarkersUpdate = function () {
   this.setMarkersUpdate(undefined);
 };
-
-
 /**
  * Returns whether this field is set.
  * @return {!boolean}
  */
-proto.Operation.prototype.hasMarkersUpdate = function() {
+
+
+proto.Operation.prototype.hasMarkersUpdate = function () {
   return jspb.Message.getField(this, 3) != null;
 };
 
-
 goog.object.extend(exports, proto);
-
 
 /***/ }),
 /* 14 */
@@ -6617,5 +7205,4 @@ jspb.BinaryReader.prototype.readPackedFixedHash64=function(){return this.readPac
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ })
-/******/ ]);
-});
+/******/ ])});;
