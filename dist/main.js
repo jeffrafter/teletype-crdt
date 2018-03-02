@@ -690,7 +690,9 @@ var objectKeys = Object.keys || function (obj) {
 /* 3 */
 /***/ (function(module, exports) {
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -845,9 +847,11 @@ function _sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; 
 
 function _slicedToArray(arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return _sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }
 
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -1126,12 +1130,12 @@ function () {
       for (var i = this.undoStack.length - 1; i >= 0; i--) {
         var stackEntry = this.undoStack[i];
 
-        if (stackEntry instanceof Transaction) {
+        if (_instanceof(stackEntry, Transaction)) {
           operationsToUndo = stackEntry.operations;
           markersSnapshot = stackEntry.markersSnapshotBefore;
           spliceIndex = i;
           break;
-        } else if (stackEntry instanceof Checkpoint && stackEntry.isBarrier) {
+        } else if (_instanceof(stackEntry, Checkpoint) && stackEntry.isBarrier) {
           return null;
         }
       }
@@ -1165,7 +1169,7 @@ function () {
       for (var i = this.redoStack.length - 1; i >= 0; i--) {
         var stackEntry = this.redoStack[i];
 
-        if (stackEntry instanceof Transaction) {
+        if (_instanceof(stackEntry, Transaction)) {
           operationsToRedo = stackEntry.operations;
           markersSnapshot = stackEntry.markersSnapshotAfter;
           spliceIndex = i;
@@ -1173,7 +1177,7 @@ function () {
         }
       }
 
-      while (this.redoStack[spliceIndex - 1] instanceof Checkpoint) {
+      while (_instanceof(this.redoStack[spliceIndex - 1], Checkpoint)) {
         spliceIndex--;
       }
 
@@ -1212,13 +1216,13 @@ function () {
       var topEntry = this.undoStack[this.undoStack.length - 1];
       var previousEntry = this.undoStack[this.undoStack.length - 2];
 
-      if (topEntry instanceof Transaction) {
+      if (_instanceof(topEntry, Transaction)) {
         topEntry.groupingInterval = groupingInterval;
       } else {
         return;
       }
 
-      if (previousEntry instanceof Transaction) {
+      if (_instanceof(previousEntry, Transaction)) {
         var timeBetweenEntries = topEntry.timestamp - previousEntry.timestamp;
         var minGroupingInterval = Math.min(groupingInterval, previousEntry.groupingInterval || Infinity);
 
@@ -1253,7 +1257,7 @@ function () {
       for (var i = this.undoStack.length - 1; i >= 0; i--) {
         var stackEntry = this.undoStack[i];
 
-        if (stackEntry instanceof Checkpoint) {
+        if (_instanceof(stackEntry, Checkpoint)) {
           if (stackEntry.id == checkpointId) return false;
           if (stackEntry.isBarrier) return true;
         }
@@ -1322,12 +1326,12 @@ function () {
       for (var i = this.undoStack.length - 1; i >= 0; i--) {
         var stackEntry = this.undoStack[i];
 
-        if (stackEntry instanceof Checkpoint) {
+        if (_instanceof(stackEntry, Checkpoint)) {
           if (stackEntry.id === checkpointId) {
             checkpointIndex = i;
             break;
           }
-        } else if (stackEntry instanceof Transaction) {
+        } else if (_instanceof(stackEntry, Transaction)) {
           operations.push.apply(operations, _toConsumableArray(stackEntry.operations));
         } else {
           throw new Error('Unknown stack entry ' + stackEntry.constructor.name);
@@ -1358,7 +1362,7 @@ function () {
       for (var i = this.undoStack.length - 1; i >= 0; i--) {
         var stackEntry = this.undoStack[i];
 
-        if (stackEntry instanceof Checkpoint) {
+        if (_instanceof(stackEntry, Checkpoint)) {
           if (stackEntry.isBarrier) return false;
         } else {
           if (lastTransaction) {
@@ -1382,7 +1386,7 @@ function () {
       for (var i = this.redoStack.length - 1; i >= 0; i--) {
         var entry = this.redoStack[i];
 
-        if (entry instanceof Transaction) {
+        if (_instanceof(entry, Transaction)) {
           var markersBefore = this.markersFromSnapshot(entry.markersSnapshotBefore);
           var changes = this.undoOrRedoOperations(entry.operations).textUpdates;
           var markersAfter = this.markersFromSnapshot(entry.markersSnapshotAfter);
@@ -1408,7 +1412,7 @@ function () {
       for (var _i2 = this.redoStack.length - 1; _i2 >= this.redoStack.length - redoStack.length; _i2--) {
         var _entry = this.redoStack[_i2];
 
-        if (_entry instanceof Transaction) {
+        if (_instanceof(_entry, Transaction)) {
           this.undoOrRedoOperations(_entry.operations);
         }
       }
@@ -1418,7 +1422,7 @@ function () {
       for (var _i3 = this.undoStack.length - 1; _i3 >= 0; _i3--) {
         var _entry2 = this.undoStack[_i3];
 
-        if (_entry2 instanceof Transaction) {
+        if (_instanceof(_entry2, Transaction)) {
           var _markersAfter = this.markersFromSnapshot(_entry2.markersSnapshotAfter);
 
           var _changes = invertTextUpdates(this.undoOrRedoOperations(_entry2.operations).textUpdates);
@@ -1447,7 +1451,7 @@ function () {
       for (var _i4 = this.undoStack.length - 1; _i4 >= this.undoStack.length - undoStack.length; _i4--) {
         var _entry3 = this.undoStack[_i4];
 
-        if (_entry3 instanceof Transaction) {
+        if (_instanceof(_entry3, Transaction)) {
           this.undoOrRedoOperations(_entry3.operations);
         }
       }
@@ -2362,20 +2366,20 @@ function () {
 
       try {
         for (var _iterator = segment.deletions[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var _deletionSpliceIdString = _step.value;
+          var deletionSpliceIdString = _step.value;
 
-          if (operationsToIgnore && operationsToIgnore.has(_deletionSpliceIdString)) {
+          if (operationsToIgnore && operationsToIgnore.has(deletionSpliceIdString)) {
             continue;
           }
 
           var deletionUndoCount = void 0;
 
           if (undoCountOverrides) {
-            deletionUndoCount = undoCountOverrides.get(_deletionSpliceIdString);
+            deletionUndoCount = undoCountOverrides.get(deletionSpliceIdString);
           }
 
           if (deletionUndoCount == null) {
-            deletionUndoCount = this.undoCountsBySpliceId.get(_deletionSpliceIdString) || 0;
+            deletionUndoCount = this.undoCountsBySpliceId.get(deletionSpliceIdString) || 0;
           }
 
           if ((deletionUndoCount & 1) === 0) return true;
@@ -3306,9 +3310,11 @@ if (typeof Object.create === 'function') {
 /* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
@@ -3506,9 +3512,11 @@ function (_SplayTree) {
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
+function _instanceof(left, right) { if (right != null && typeof Symbol !== "undefined" && right[Symbol.hasInstance]) { return right[Symbol.hasInstance](left); } else { return left instanceof right; } }
+
 function _typeof(obj) { if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") { _typeof = function _typeof(obj) { return typeof obj; }; } else { _typeof = function _typeof(obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; }; } return _typeof(obj); }
 
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+function _classCallCheck(instance, Constructor) { if (!_instanceof(instance, Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 function _defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } }
 
