@@ -1,4 +1,14 @@
-define("telepath-crdt", [], function() { return /******/ (function(modules) { // webpackBootstrap
+(function webpackUniversalModuleDefinition(root, factory) {
+	if(typeof exports === 'object' && typeof module === 'object')
+		module.exports = factory();
+	else if(typeof define === 'function' && define.amd)
+		define([], factory);
+	else if(typeof exports === 'object')
+		exports["telepath-crdt"] = factory();
+	else
+		root["telepath-crdt"] = factory();
+})(typeof self !== 'undefined' ? self : this, function() {
+return /******/ (function(modules) { // webpackBootstrap
 /******/ 	// The module cache
 /******/ 	var installedModules = {};
 /******/
@@ -7213,4 +7223,5 @@ jspb.BinaryReader.prototype.readPackedFixedHash64=function(){return this.readPac
 /* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(0)))
 
 /***/ })
-/******/ ])});;
+/******/ ]);
+});

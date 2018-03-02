@@ -6,7 +6,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
     filename: "main.js",
     library: "telepath-crdt",
-    libraryTarget: "amd",
+    libraryTarget: "umd",
   },
   module: {
     rules: [
