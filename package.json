@@ -20,7 +20,6 @@
     "@babel/core": "^7.0.0-beta.40",
     "@babel/preset-es2015": "^7.0.0-beta.40",
     "babel-loader": "8.0.0-beta.0",
-    "electron": "~>1.6.16",
     "mocha": "^3.4.1",
     "random-seed": "^0.3.0",
     "webpack": "~3",
